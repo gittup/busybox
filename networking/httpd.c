@@ -2230,7 +2230,7 @@ static void mini_httpd_nommu(int server_socket, int argc, char **argv)
 			xdup2(0, 1);
 
 			/* Run a copy of ourself in inetd mode */
-			re_exec(argv_copy);
+			bb_re_exec(argv_copy);
 		}
 		/* parent, or vfork failed */
 		close(n);

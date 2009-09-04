@@ -242,7 +242,7 @@ int FAST_FUNC spawn_and_wait(char **argv)
 }
 
 #if !BB_MMU
-void FAST_FUNC re_exec(char **argv)
+void FAST_FUNC bb_re_exec(char **argv)
 {
 	/* high-order bit of first char in argv[0] is a hidden
 	 * "we have (already) re-execed, don't do it again" flag */
@@ -263,7 +263,7 @@ pid_t FAST_FUNC fork_or_rexec(char **argv)
 	if (pid) /* parent */
 		return pid;
 	/* child - re-exec ourself */
-	re_exec(argv);
+	bb_re_exec(argv);
 }
 #else
 /* Dance around (void)...*/

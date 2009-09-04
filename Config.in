@@ -3,7 +3,7 @@
 # see scripts/kbuild/config-language.txt.
 #
 
-mainmenu "BusyBox Configuration"
+#mainmenu "BusyBox Configuration"
 
 config HAVE_DOT_CONFIG
 	bool

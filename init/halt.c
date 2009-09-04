@@ -95,20 +95,20 @@ int halt_main(int argc UNUSED_PARAM, char **argv)
 		}
 		if (rc) {
 			/* talk to init */
-			if (!ENABLE_FEATURE_CALL_TELINIT) {
-				/* bbox init assumed */
-				rc = kill(1, signals[which]);
-			} else {
-				/* SysV style init assumed */
-				/* runlevels:
-				 * 0 == shutdown
-				 * 6 == reboot */
-				rc = execlp(CONFIG_TELINIT_PATH,
-						CONFIG_TELINIT_PATH,
-						which == 2 ? "6" : "0",
-						(char *)NULL
-				);
-			}
+#if ENABLE_FEATURE_CALL_TELINIT
+			/* SysV style init assumed */
+			/* runlevels:
+			 * 0 == shutdown
+			 * 6 == reboot */
+			rc = execlp(CONFIG_TELINIT_PATH,
+				    CONFIG_TELINIT_PATH,
+				    which == 2 ? "6" : "0",
+				    (char *)NULL
+				   );
+#else
+			/* bbox init assumed */
+			rc = kill(1, signals[which]);
+#endif
 		}
 	} else {
 		rc = reboot(magic[which]);

@@ -282,8 +282,7 @@ typedef unsigned smalluint;
  * for a mmu-less system.
  */
 #if ENABLE_NOMMU || \
-    (defined __UCLIBC__ && __UCLIBC_MAJOR__ >= 0 && __UCLIBC_MINOR__ >= 9 && \
-    __UCLIBC_SUBLEVEL__ > 28 && !defined __ARCH_USE_MMU__)
+    (defined __UCLIBC__ && !defined __ARCH_USE_MMU__)
 # define BB_MMU 0
 # define USE_FOR_NOMMU(...) __VA_ARGS__
 # define USE_FOR_MMU(...)

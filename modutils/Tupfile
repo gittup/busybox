@@ -1,0 +1,11 @@
+include_rules
+
+lib-@(MODPROBE_SMALL)      += modprobe-small.c
+lib-@(DEPMOD)              += depmod.c modutils.c
+lib-@(INSMOD)              += insmod.c modutils.c
+lib-@(LSMOD)               += lsmod.c modutils.c
+lib-@(MODPROBE)            += modprobe.c modutils.c
+lib-@(RMMOD)               += rmmod.c modutils.c
+lib-@(FEATURE_2_4_MODULES) += modutils-24.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

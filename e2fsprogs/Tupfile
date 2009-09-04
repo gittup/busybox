@@ -1,0 +1,7 @@
+include_rules
+
+lib-@(CHATTR) += chattr.c e2fs_lib.c
+lib-@(LSATTR) += lsattr.c e2fs_lib.c
+lib-@(FSCK) += fsck.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

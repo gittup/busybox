@@ -1,0 +1,7 @@
+include_rules
+
+lib-@(HALT) += halt.c
+lib-@(INIT) += init.c
+lib-@(MESG) += mesg.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

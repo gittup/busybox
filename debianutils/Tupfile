@@ -1,0 +1,9 @@
+include_rules
+
+lib-@(MKTEMP)            += mktemp.c
+lib-@(PIPE_PROGRESS)     += pipe_progress.c
+lib-@(RUN_PARTS)         += run_parts.c
+lib-@(START_STOP_DAEMON) += start_stop_daemon.c
+lib-@(WHICH)             += which.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

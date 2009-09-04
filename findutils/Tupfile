@@ -1,0 +1,7 @@
+include_rules
+
+lib-@(FIND)	+= find.c
+lib-@(GREP)	+= grep.c
+lib-@(XARGS)	+= xargs.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

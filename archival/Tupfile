@@ -1,0 +1,20 @@
+include_rules
+
+lib-@(AR)		+= ar.c
+lib-@(BUNZIP2)		+= bbunzip.c
+lib-@(BZIP2)		+= bzip2.c bbunzip.c
+lib-@(UNLZMA)		+= bbunzip.c
+lib-@(CPIO)		+= cpio.c
+lib-@(DPKG)		+= dpkg.c
+lib-@(DPKG_DEB)		+= dpkg_deb.c
+lib-@(GUNZIP)		+= bbunzip.c
+lib-@(GZIP)		+= gzip.c bbunzip.c
+lib-@(LZOP)		+= lzop.c lzo1x_1.c lzo1x_1o.c lzo1x_d.c bbunzip.c
+lib-@(LZOP_COMPR_HIGH)	+= lzo1x_9x.c
+lib-@(RPM2CPIO)		+= rpm2cpio.c
+lib-@(RPM)		+= rpm.c
+lib-@(TAR)		+= tar.c
+lib-@(UNCOMPRESS)	+= bbunzip.c
+lib-@(UNZIP)		+= unzip.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

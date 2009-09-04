@@ -1,0 +1,16 @@
+include_rules
+
+lib-@(ADDGROUP)	+= addgroup.c
+lib-@(ADDUSER)	+= adduser.c
+lib-@(CRYPTPW)	+= cryptpw.c
+lib-@(CHPASSWD)	+= chpasswd.c
+lib-@(GETTY)	+= getty.c
+lib-@(LOGIN)	+= login.c
+lib-@(PASSWD)	+= passwd.c
+lib-@(SU)	+= su.c
+lib-@(SULOGIN)	+= sulogin.c
+lib-@(VLOCK)	+= vlock.c
+lib-@(DELUSER)	+= deluser.c
+lib-@(DELGROUP)	+= deluser.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

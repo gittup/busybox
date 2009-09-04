@@ -1,0 +1,8 @@
+include_rules
+
+lib-@(MAKEMIME)     += mime.c mail.c
+lib-@(POPMAILDIR)   += popmaildir.c mail.c
+lib-@(REFORMIME)    += mime.c mail.c
+lib-@(SENDMAIL)     += sendmail.c mail.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

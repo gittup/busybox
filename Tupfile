@@ -1,0 +1,14 @@
+include_rules
+
+libs-y += archival/libunarchive/built-in.o
+libs-y += coreutils/libcoreutils/built-in.o
+libs-y += coreutils/built-in.o
+libs-y += editors/built-in.o
+libs-y += init/built-in.o
+libs-y += libbb/built-in.o
+libs-y += libpwdgrp/built-in.o
+libs-y += procps/built-in.o
+libs-y += shell/built-in.o
+libs-y += util-linux/built-in.o
+
+: $(libs-y) | $(compiler_files) |> ^ LINK %o^ $(SLASH_ROOT)/bin/xgcc -B$(SLASH_ROOT)/lib -B$(SLASH_ROOT)/bin %f -o %o |> busybox

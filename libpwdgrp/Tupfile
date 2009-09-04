@@ -1,0 +1,6 @@
+include_rules
+
+lib-y += uidgid_get.c
+lib-@(USE_BB_PWD_GRP) += pwd_grp.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

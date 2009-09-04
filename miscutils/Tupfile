@@ -1,0 +1,42 @@
+include_rules
+
+lib-@(ADJTIMEX)    += adjtimex.c
+lib-@(BBCONFIG)    += bbconfig.c
+lib-@(BEEP)        += beep.c
+lib-@(CHAT)        += chat.c
+lib-@(CHRT)        += chrt.c
+lib-@(CROND)       += crond.c
+lib-@(CRONTAB)     += crontab.c
+lib-@(DC)          += dc.c
+lib-@(DEVFSD)      += devfsd.c
+lib-@(DEVMEM)      += devmem.c
+lib-@(EJECT)       += eject.c
+lib-@(FBSPLASH)    += fbsplash.c
+lib-@(FLASH_ERASEALL) += flash_eraseall.c
+lib-@(FLASH_LOCK)     += flash_lock_unlock.c
+lib-@(FLASH_UNLOCK)   += flash_lock_unlock.c
+lib-@(IONICE)      += ionice.c
+lib-@(HDPARM)      += hdparm.c
+lib-@(INOTIFYD)    += inotifyd.c
+lib-@(FEATURE_LAST_SMALL)+= last.c
+lib-@(FEATURE_LAST_FANCY)+= last_fancy.c
+lib-@(LESS)        += less.c
+lib-@(MAKEDEVS)    += makedevs.c
+lib-@(MAN)         += man.c
+lib-@(MICROCOM)    += microcom.c
+lib-@(MOUNTPOINT)  += mountpoint.c
+lib-@(MT)          += mt.c
+lib-@(RAIDAUTORUN) += raidautorun.c
+lib-@(READAHEAD)   += readahead.c
+lib-@(RUNLEVEL)    += runlevel.c
+lib-@(RX)          += rx.c
+lib-@(SETSID)      += setsid.c
+lib-@(STRINGS)     += strings.c
+lib-@(TASKSET)     += taskset.c
+lib-@(TIME)        += time.c
+lib-@(TIMEOUT)     += timeout.c
+lib-@(TTYSIZE)     += ttysize.c
+lib-@(VOLNAME)     += volname.c
+lib-@(WATCHDOG)    += watchdog.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

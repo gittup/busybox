@@ -1,0 +1,7 @@
+include_rules
+
+lib-@(LPD) += lpd.c
+lib-@(LPR) += lpr.c
+lib-@(LPQ) += lpr.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

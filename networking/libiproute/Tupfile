@@ -1,0 +1,53 @@
+include_rules
+
+lib-@(SLATTACH) += \
+	utils.c
+lib-@(IP) += \
+	ip_parse_common_args.c \
+	libnetlink.c \
+	ll_addr.c \
+	ll_map.c \
+	ll_proto.c \
+	ll_types.c \
+	rt_names.c \
+	rtm_map.c \
+	utils.c
+lib-@(FEATURE_IP_ADDRESS) += \
+	ip_parse_common_args.c \
+	ipaddress.c \
+	libnetlink.c \
+	ll_addr.c \
+	ll_map.c \
+	ll_types.c \
+	rt_names.c \
+	utils.c
+lib-@(FEATURE_IP_LINK) += \
+	ip_parse_common_args.c \
+	ipaddress.c \
+	iplink.c \
+	libnetlink.c \
+	ll_addr.c \
+	ll_map.c \
+	ll_types.c \
+	rt_names.c \
+	utils.c
+lib-@(FEATURE_IP_ROUTE) += \
+	ip_parse_common_args.c \
+	iproute.c \
+	libnetlink.c \
+	ll_map.c \
+	rt_names.c \
+	rtm_map.c \
+	utils.c
+lib-@(FEATURE_IP_TUNNEL) += \
+	ip_parse_common_args.c \
+	iptunnel.c \
+	rt_names.c \
+	utils.c
+lib-@(FEATURE_IP_RULE) += \
+	ip_parse_common_args.c \
+	iprule.c \
+	rt_names.c \
+	utils.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

@@ -1,0 +1,3 @@
+!cc_kbuild = | $(compiler_files) $(generated_headers) |> ^ CC %f^ $(SLASH_ROOT)/bin/xgcc -B$(SLASH_ROOT)/lib -B$(SLASH_ROOT)/bin -nostdinc -I$(GCC_ROOT)/gcc/ginclude -isystem $(GCC_ROOT)/include-fixed -isystem $(UCLIBC_ROOT)/include -isystem $(UCLIBC_ROOT)/libpthread/linuxthreads.old/sysdeps/i386 -include $(UCLIBC_ROOT)/include/libc-symbols.h $(CFLAGS) $(CFLAGS_%e) $(CFLAGS_%f) -D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(%B)" -D"KBUILD_MODNAME=KBUILD_STR(%B)" -ftup-busybox -ftup-uclibc -ftup-linux -c %f -o %o |>
+: foreach $(lib-y) |> !cc_kbuild |> %B.o {objs}
+: {objs} | $(compiler_files) |> ^ LD %o^ $(SLASH_ROOT)/bin/xgcc -nostdlib -B$(SLASH_ROOT)/lib -B$(SLASH_ROOT)/bin -Wl,-r -o %o %f |> built-in.o

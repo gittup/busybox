@@ -1,0 +1,13 @@
+include_rules
+
+lib-@(RUNSV) += runsv.c runit_lib.c
+lib-@(RUNSVDIR) += runsvdir.c runit_lib.c
+lib-@(SV) += sv.c runit_lib.c
+lib-@(SVLOGD) += svlogd.c runit_lib.c
+lib-@(CHPST) += chpst.c
+lib-@(ENVDIR) += chpst.c
+lib-@(ENVUIDGID) += chpst.c
+lib-@(SETUIDGID) += chpst.c
+lib-@(SOFTLIMIT) += chpst.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

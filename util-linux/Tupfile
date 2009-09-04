@@ -1,0 +1,37 @@
+include_rules
+
+lib-@(ACPID)             += acpid.c
+lib-@(BLKID)             += blkid.c
+lib-@(DMESG)             += dmesg.c
+lib-@(FBSET)             += fbset.c
+lib-@(FDFLUSH)           += freeramdisk.c
+lib-@(FDFORMAT)          += fdformat.c
+lib-@(FDISK)             += fdisk.c
+lib-@(FINDFS)            += findfs.c
+lib-@(FREERAMDISK)       += freeramdisk.c
+lib-@(FSCK_MINIX)        += fsck_minix.c
+lib-@(GETOPT)            += getopt.c
+lib-@(HEXDUMP)           += hexdump.c
+lib-@(HWCLOCK)           += hwclock.c
+lib-@(IPCRM)             += ipcrm.c
+lib-@(IPCS)              += ipcs.c
+lib-@(LOSETUP)           += losetup.c
+lib-@(MDEV)              += mdev.c
+lib-@(MKFS_MINIX)        += mkfs_minix.c
+lib-@(MKFS_VFAT)         += mkfs_vfat.c
+lib-@(MKSWAP)            += mkswap.c
+lib-@(MORE)              += more.c
+lib-@(MOUNT)             += mount.c
+lib-@(PIVOT_ROOT)        += pivot_root.c
+lib-@(RDATE)             += rdate.c
+lib-@(RDEV)              += rdev.c
+lib-@(READPROFILE)       += readprofile.c
+lib-@(RTCWAKE)           += rtcwake.c
+lib-@(SCRIPT)            += script.c
+lib-@(SCRIPTREPLAY)      += scriptreplay.c
+lib-@(SETARCH)           += setarch.c
+lib-@(SWAPONOFF)         += swaponoff.c
+lib-@(SWITCH_ROOT)       += switch_root.c
+lib-@(UMOUNT)            += umount.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

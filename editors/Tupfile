@@ -1,0 +1,11 @@
+include_rules
+
+lib-@(AWK)       += awk.c
+lib-@(CMP)       += cmp.c
+lib-@(DIFF)      += diff.c
+lib-@(ED)        += ed.c
+lib-@(PATCH)     += patch.c
+lib-@(SED)       += sed.c
+lib-@(VI)        += vi.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

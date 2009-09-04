@@ -1,0 +1,19 @@
+include_rules
+
+lib-@(FREE)	+= free.c
+lib-@(FUSER)	+= fuser.c
+kill-@(KILL) = kill.c
+kill-@(ASH) = kill.c
+lib-y += $(kill-y)
+lib-@(NMETER)    += nmeter.c
+lib-@(PGREP)	+= pgrep.c
+lib-@(PKILL)	+= pgrep.c
+lib-@(PIDOF)	+= pidof.c
+lib-@(PS)	+= ps.c
+lib-@(RENICE)	+= renice.c
+lib-@(BB_SYSCTL)	+= sysctl.c
+lib-@(TOP)	+= top.c
+lib-@(UPTIME)	+= uptime.c
+lib-@(WATCH)     += watch.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

@@ -1,0 +1,8 @@
+include_rules
+
+lib-@(ASH)      += ash.c ash_ptr_hack.c
+lib-@(HUSH)     += hush.c match.c
+lib-@(CTTYHACK) += cttyhack.c
+lib-@(SH_MATH_SUPPORT) += math.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

@@ -1,0 +1,42 @@
+include_rules
+
+lib-@(ARP)          += arp.c interface.c
+lib-@(ARPING)       += arping.c
+lib-@(BRCTL)        += brctl.c
+lib-@(DNSD)         += dnsd.c
+lib-@(ETHER_WAKE)   += ether-wake.c
+lib-@(FAKEIDENTD)   += isrv_identd.c isrv.c
+lib-@(FTPD)         += ftpd.c
+lib-@(FTPGET)       += ftpgetput.c
+lib-@(FTPPUT)       += ftpgetput.c
+lib-@(HOSTNAME)     += hostname.c
+lib-@(HTTPD)        += httpd.c
+lib-@(IFCONFIG)     += ifconfig.c interface.c
+lib-@(IFENSLAVE)    += ifenslave.c interface.c
+lib-@(IFPLUGD)      += ifplugd.c
+lib-@(IFUPDOWN)     += ifupdown.c
+lib-@(INETD)        += inetd.c
+lib-@(IP)           += ip.c
+lib-@(IPCALC)       += ipcalc.c
+lib-@(NAMEIF)       += nameif.c
+lib-@(NC)           += nc.c
+lib-@(NETSTAT)      += netstat.c
+lib-@(NSLOOKUP)     += nslookup.c
+lib-@(PING)         += ping.c
+lib-@(PING6)        += ping.c
+lib-@(PSCAN)        += pscan.c
+lib-@(ROUTE)        += route.c
+lib-@(SLATTACH)     += slattach.c
+lib-@(TELNET)       += telnet.c
+lib-@(TELNETD)      += telnetd.c
+lib-@(TFTP)         += tftp.c
+lib-@(TFTPD)        += tftp.c
+lib-@(TRACEROUTE)   += traceroute.c
+lib-@(TUNCTL)       += tunctl.c
+lib-@(VCONFIG)      += vconfig.c
+lib-@(WGET)         += wget.c
+lib-@(ZCIP)         += zcip.c
+lib-@(TCPSVD)       += tcpudp.c tcpudp_perhost.c
+lib-@(UDPSVD)       += tcpudp.c tcpudp_perhost.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

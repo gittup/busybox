@@ -1,0 +1,4 @@
+include_rules
+
+CFLAGS += -ftup-busybox -ftup-linux
+: foreach applet_tables.c usage.c | $(compiler) |> !cc_link |> %B

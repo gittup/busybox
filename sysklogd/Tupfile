@@ -1,0 +1,8 @@
+include_rules
+
+lib-@(KLOGD)		+= klogd.c
+lib-@(LOGGER)		+= syslogd_and_logger.c
+lib-@(LOGREAD)		+= logread.c
+lib-@(SYSLOGD)		+= syslogd_and_logger.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

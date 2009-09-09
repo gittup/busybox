@@ -11,4 +11,4 @@ libs-y += procps/built-in.o
 libs-y += shell/built-in.o
 libs-y += util-linux/built-in.o
 
-: $(libs-y) | $(compiler_files) |> ^ LINK %o^ $(SLASH_ROOT)/bin/xgcc -B$(SLASH_ROOT)/lib -B$(SLASH_ROOT)/bin %f -o %o |> busybox
+: $(libs-y) | $(compiler_files) |> ^ LINK %o^ $(CC_LD) %f -o %o -B$(UCLIBC_ROOT)/libc |> busybox

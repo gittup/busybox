@@ -1,0 +1,924 @@
+!bb_ln = | |> ^ LN %o -> busybox^ rm -f %o; ln -s busybox %o |>
+: $(GITTUP_ROOT)/busybox/busybox |> ^ INSTALL %o^ rm -f %o; cp %f %o |> busybox
+# This could obviously benefit from some better tup syntax
+ifeq (@(AR),y)
+: busybox |> !bb_ln |> ar
+endif
+ifeq (@(BUNZIP2),y)
+: busybox |> !bb_ln |> bunzip2
+endif
+ifeq (@(BZIP2),y)
+: busybox |> !bb_ln |> bzip2
+endif
+ifeq (@(CPIO),y)
+: busybox |> !bb_ln |> cpio
+endif
+ifeq (@(DPKG),y)
+: busybox |> !bb_ln |> dpkg
+endif
+ifeq (@(DPKG_DEB),y)
+: busybox |> !bb_ln |> dpkg_deb
+endif
+ifeq (@(GUNZIP),y)
+: busybox |> !bb_ln |> gunzip
+endif
+ifeq (@(GZIP),y)
+: busybox |> !bb_ln |> gzip
+endif
+ifeq (@(LZOP),y)
+: busybox |> !bb_ln |> lzop
+endif
+ifeq (@(RPM2CPIO),y)
+: busybox |> !bb_ln |> rpm2cpio
+endif
+ifeq (@(RPM),y)
+: busybox |> !bb_ln |> rpm
+endif
+ifeq (@(TAR),y)
+: busybox |> !bb_ln |> tar
+endif
+ifeq (@(UNCOMPRESS),y)
+: busybox |> !bb_ln |> uncompress
+endif
+ifeq (@(UNLZMA),y)
+: busybox |> !bb_ln |> unlzma
+endif
+ifeq (@(UNZIP),y)
+: busybox |> !bb_ln |> unzip
+endif
+ifeq (@(CHVT),y)
+: busybox |> !bb_ln |> chvt
+endif
+ifeq (@(CLEAR),y)
+: busybox |> !bb_ln |> clear
+endif
+ifeq (@(DEALLOCVT),y)
+: busybox |> !bb_ln |> deallocvt
+endif
+ifeq (@(DUMPKMAP),y)
+: busybox |> !bb_ln |> dumpkmap
+endif
+ifeq (@(KBD_MODE),y)
+: busybox |> !bb_ln |> kbd_mode
+endif
+ifeq (@(LOADFONT),y)
+: busybox |> !bb_ln |> loadfont
+endif
+ifeq (@(LOADKMAP),y)
+: busybox |> !bb_ln |> loadkmap
+endif
+ifeq (@(OPENVT),y)
+: busybox |> !bb_ln |> openvt
+endif
+ifeq (@(RESET),y)
+: busybox |> !bb_ln |> reset
+endif
+ifeq (@(RESIZE),y)
+: busybox |> !bb_ln |> resize
+endif
+ifeq (@(SETCONSOLE),y)
+: busybox |> !bb_ln |> setconsole
+endif
+ifeq (@(SETFONT),y)
+: busybox |> !bb_ln |> setfont
+endif
+ifeq (@(SETKEYCODES),y)
+: busybox |> !bb_ln |> setkeycodes
+endif
+ifeq (@(SETLOGCONS),y)
+: busybox |> !bb_ln |> setlogcons
+endif
+ifeq (@(SHOWKEY),y)
+: busybox |> !bb_ln |> showkey
+endif
+ifeq (@(BASENAME),y)
+: busybox |> !bb_ln |> basename
+endif
+ifeq (@(CAL),y)
+: busybox |> !bb_ln |> cal
+endif
+ifeq (@(CAT),y)
+: busybox |> !bb_ln |> cat
+endif
+ifeq (@(CATV),y)
+: busybox |> !bb_ln |> catv
+endif
+ifeq (@(CHGRP),y)
+: busybox |> !bb_ln |> chgrp
+endif
+ifeq (@(CHMOD),y)
+: busybox |> !bb_ln |> chmod
+endif
+ifeq (@(CHOWN),y)
+: busybox |> !bb_ln |> chown
+endif
+ifeq (@(CHROOT),y)
+: busybox |> !bb_ln |> chroot
+endif
+ifeq (@(CKSUM),y)
+: busybox |> !bb_ln |> cksum
+endif
+ifeq (@(COMM),y)
+: busybox |> !bb_ln |> comm
+endif
+ifeq (@(CP),y)
+: busybox |> !bb_ln |> cp
+endif
+ifeq (@(CUT),y)
+: busybox |> !bb_ln |> cut
+endif
+ifeq (@(DATE),y)
+: busybox |> !bb_ln |> date
+endif
+ifeq (@(DD),y)
+: busybox |> !bb_ln |> dd
+endif
+ifeq (@(DF),y)
+: busybox |> !bb_ln |> df
+endif
+ifeq (@(DIRNAME),y)
+: busybox |> !bb_ln |> dirname
+endif
+ifeq (@(DOS2UNIX),y)
+: busybox |> !bb_ln |> dos2unix
+endif
+ifeq (@(UNIX2DOS),y)
+: busybox |> !bb_ln |> unix2dos
+endif
+ifeq (@(DU),y)
+: busybox |> !bb_ln |> du
+endif
+ifeq (@(ECHO),y)
+: busybox |> !bb_ln |> echo
+endif
+ifeq (@(ENV),y)
+: busybox |> !bb_ln |> env
+endif
+ifeq (@(EXPAND),y)
+: busybox |> !bb_ln |> expand
+endif
+ifeq (@(EXPR),y)
+: busybox |> !bb_ln |> expr
+endif
+ifeq (@(FALSE),y)
+: busybox |> !bb_ln |> false
+endif
+ifeq (@(FOLD),y)
+: busybox |> !bb_ln |> fold
+endif
+ifeq (@(FSYNC),y)
+: busybox |> !bb_ln |> fsync
+endif
+ifeq (@(HEAD),y)
+: busybox |> !bb_ln |> head
+endif
+ifeq (@(HOSTID),y)
+: busybox |> !bb_ln |> hostid
+endif
+ifeq (@(ID),y)
+: busybox |> !bb_ln |> id
+endif
+ifeq (@(INSTALL),y)
+: busybox |> !bb_ln |> install
+endif
+ifeq (@(LENGTH),y)
+: busybox |> !bb_ln |> length
+endif
+ifeq (@(LN),y)
+: busybox |> !bb_ln |> ln
+endif
+ifeq (@(LOGNAME),y)
+: busybox |> !bb_ln |> logname
+endif
+ifeq (@(LS),y)
+: busybox |> !bb_ln |> ls
+endif
+ifeq (@(MD5SUM),y)
+: busybox |> !bb_ln |> md5sum
+endif
+ifeq (@(MKDIR),y)
+: busybox |> !bb_ln |> mkdir
+endif
+ifeq (@(MKFIFO),y)
+: busybox |> !bb_ln |> mkfifo
+endif
+ifeq (@(MKNOD),y)
+: busybox |> !bb_ln |> mknod
+endif
+ifeq (@(MV),y)
+: busybox |> !bb_ln |> mv
+endif
+ifeq (@(NICE),y)
+: busybox |> !bb_ln |> nice
+endif
+ifeq (@(NOHUP),y)
+: busybox |> !bb_ln |> nohup
+endif
+ifeq (@(OD),y)
+: busybox |> !bb_ln |> od
+endif
+ifeq (@(PRINTENV),y)
+: busybox |> !bb_ln |> printenv
+endif
+ifeq (@(PRINTF),y)
+: busybox |> !bb_ln |> printf
+endif
+ifeq (@(PWD),y)
+: busybox |> !bb_ln |> pwd
+endif
+ifeq (@(READLINK),y)
+: busybox |> !bb_ln |> readlink
+endif
+ifeq (@(REALPATH),y)
+: busybox |> !bb_ln |> realpath
+endif
+ifeq (@(RM),y)
+: busybox |> !bb_ln |> rm
+endif
+ifeq (@(RMDIR),y)
+: busybox |> !bb_ln |> rmdir
+endif
+ifeq (@(SEQ),y)
+: busybox |> !bb_ln |> seq
+endif
+ifeq (@(SHA1SUM),y)
+: busybox |> !bb_ln |> sha1sum
+endif
+ifeq (@(SHA256SUM),y)
+: busybox |> !bb_ln |> sha256sum
+endif
+ifeq (@(SHA512SUM),y)
+: busybox |> !bb_ln |> sha512sum
+endif
+ifeq (@(SLEEP),y)
+: busybox |> !bb_ln |> sleep
+endif
+ifeq (@(SORT),y)
+: busybox |> !bb_ln |> sort
+endif
+ifeq (@(SPLIT),y)
+: busybox |> !bb_ln |> split
+endif
+ifeq (@(STAT),y)
+: busybox |> !bb_ln |> stat
+endif
+ifeq (@(STTY),y)
+: busybox |> !bb_ln |> stty
+endif
+ifeq (@(SUM),y)
+: busybox |> !bb_ln |> sum
+endif
+ifeq (@(SYNC),y)
+: busybox |> !bb_ln |> sync
+endif
+ifeq (@(TAC),y)
+: busybox |> !bb_ln |> tac
+endif
+ifeq (@(TAIL),y)
+: busybox |> !bb_ln |> tail
+endif
+ifeq (@(TEE),y)
+: busybox |> !bb_ln |> tee
+endif
+ifeq (@(TEST),y)
+: busybox |> !bb_ln |> test
+endif
+ifeq (@(TOUCH),y)
+: busybox |> !bb_ln |> touch
+endif
+ifeq (@(TR),y)
+: busybox |> !bb_ln |> tr
+endif
+ifeq (@(TRUE),y)
+: busybox |> !bb_ln |> true
+endif
+ifeq (@(TTY),y)
+: busybox |> !bb_ln |> tty
+endif
+ifeq (@(UNAME),y)
+: busybox |> !bb_ln |> uname
+endif
+ifeq (@(UNEXPAND),y)
+: busybox |> !bb_ln |> unexpand
+endif
+ifeq (@(UNIQ),y)
+: busybox |> !bb_ln |> uniq
+endif
+ifeq (@(USLEEP),y)
+: busybox |> !bb_ln |> usleep
+endif
+ifeq (@(UUDECODE),y)
+: busybox |> !bb_ln |> uudecode
+endif
+ifeq (@(UUENCODE),y)
+: busybox |> !bb_ln |> uuencode
+endif
+ifeq (@(WC),y)
+: busybox |> !bb_ln |> wc
+endif
+ifeq (@(WHO),y)
+: busybox |> !bb_ln |> who
+endif
+ifeq (@(WHOAMI),y)
+: busybox |> !bb_ln |> whoami
+endif
+ifeq (@(YES),y)
+: busybox |> !bb_ln |> yes
+endif
+ifeq (@(MKTEMP),y)
+: busybox |> !bb_ln |> mktemp
+endif
+ifeq (@(PIPE_PROGRESS),y)
+: busybox |> !bb_ln |> pipe_progress
+endif
+ifeq (@(RUN_PARTS),y)
+: busybox |> !bb_ln |> run_parts
+endif
+ifeq (@(START_STOP_DAEMON),y)
+: busybox |> !bb_ln |> start_stop_daemon
+endif
+ifeq (@(WHICH),y)
+: busybox |> !bb_ln |> which
+endif
+ifeq (@(CHATTR),y)
+: busybox |> !bb_ln |> chattr
+endif
+ifeq (@(FSCK),y)
+: busybox |> !bb_ln |> fsck
+endif
+ifeq (@(LSATTR),y)
+: busybox |> !bb_ln |> lsattr
+endif
+ifeq (@(CHATTR),y)
+: busybox |> !bb_ln |> chattr
+endif
+ifeq (@(E2FSCK),y)
+: busybox |> !bb_ln |> e2fsck
+endif
+ifeq (@(FSCK),y)
+: busybox |> !bb_ln |> fsck
+endif
+ifeq (@(LSATTR),y)
+: busybox |> !bb_ln |> lsattr
+endif
+ifeq (@(MKE2FS),y)
+: busybox |> !bb_ln |> mke2fs
+endif
+ifeq (@(TUNE2FS),y)
+: busybox |> !bb_ln |> tune2fs
+endif
+ifeq (@(E2LABEL),y)
+: busybox |> !bb_ln |> e2label
+endif
+ifeq (@(FINDFS),y)
+: busybox |> !bb_ln |> findfs
+endif
+ifeq (@(AWK),y)
+: busybox |> !bb_ln |> awk
+endif
+ifeq (@(CMP),y)
+: busybox |> !bb_ln |> cmp
+endif
+ifeq (@(DIFF),y)
+: busybox |> !bb_ln |> diff
+endif
+ifeq (@(ED),y)
+: busybox |> !bb_ln |> ed
+endif
+ifeq (@(PATCH),y)
+: busybox |> !bb_ln |> patch
+endif
+ifeq (@(SED),y)
+: busybox |> !bb_ln |> sed
+endif
+ifeq (@(VI),y)
+: busybox |> !bb_ln |> vi
+endif
+ifeq (@(FIND),y)
+: busybox |> !bb_ln |> find
+endif
+ifeq (@(GREP),y)
+: busybox |> !bb_ln |> grep
+endif
+ifeq (@(XARGS),y)
+: busybox |> !bb_ln |> xargs
+endif
+ifeq (@(INIT),y)
+: busybox |> !bb_ln |> init
+endif
+ifeq (@(HALT),y)
+: busybox |> !bb_ln |> halt
+endif
+ifeq (@(MESG),y)
+: busybox |> !bb_ln |> mesg
+endif
+ifeq (@(ADDGROUP),y)
+: busybox |> !bb_ln |> addgroup
+endif
+ifeq (@(DELGROUP),y)
+: busybox |> !bb_ln |> delgroup
+endif
+ifeq (@(ADDUSER),y)
+: busybox |> !bb_ln |> adduser
+endif
+ifeq (@(DELUSER),y)
+: busybox |> !bb_ln |> deluser
+endif
+ifeq (@(GETTY),y)
+: busybox |> !bb_ln |> getty
+endif
+ifeq (@(LOGIN),y)
+: busybox |> !bb_ln |> login
+endif
+ifeq (@(PAM),y)
+: busybox |> !bb_ln |> pam
+endif
+ifeq (@(PASSWD),y)
+: busybox |> !bb_ln |> passwd
+endif
+ifeq (@(CRYPTPW),y)
+: busybox |> !bb_ln |> cryptpw
+endif
+ifeq (@(CHPASSWD),y)
+: busybox |> !bb_ln |> chpasswd
+endif
+ifeq (@(SU),y)
+: busybox |> !bb_ln |> su
+endif
+ifeq (@(SULOGIN),y)
+: busybox |> !bb_ln |> sulogin
+endif
+ifeq (@(VLOCK),y)
+: busybox |> !bb_ln |> vlock
+endif
+ifeq (@(MAKEMIME),y)
+: busybox |> !bb_ln |> makemime
+endif
+ifeq (@(POPMAILDIR),y)
+: busybox |> !bb_ln |> popmaildir
+endif
+ifeq (@(REFORMIME),y)
+: busybox |> !bb_ln |> reformime
+endif
+ifeq (@(SENDMAIL),y)
+: busybox |> !bb_ln |> sendmail
+endif
+ifeq (@(ADJTIMEX),y)
+: busybox |> !bb_ln |> adjtimex
+endif
+ifeq (@(BBCONFIG),y)
+: busybox |> !bb_ln |> bbconfig
+endif
+ifeq (@(BEEP),y)
+: busybox |> !bb_ln |> beep
+endif
+ifeq (@(CHAT),y)
+: busybox |> !bb_ln |> chat
+endif
+ifeq (@(CHRT),y)
+: busybox |> !bb_ln |> chrt
+endif
+ifeq (@(CROND),y)
+: busybox |> !bb_ln |> crond
+endif
+ifeq (@(CRONTAB),y)
+: busybox |> !bb_ln |> crontab
+endif
+ifeq (@(DC),y)
+: busybox |> !bb_ln |> dc
+endif
+ifeq (@(DEVFSD),y)
+: busybox |> !bb_ln |> devfsd
+endif
+ifeq (@(DEVMEM),y)
+: busybox |> !bb_ln |> devmem
+endif
+ifeq (@(EJECT),y)
+: busybox |> !bb_ln |> eject
+endif
+ifeq (@(FBSPLASH),y)
+: busybox |> !bb_ln |> fbsplash
+endif
+ifeq (@(FLASH_LOCK),y)
+: busybox |> !bb_ln |> flash_lock
+endif
+ifeq (@(FLASH_UNLOCK),y)
+: busybox |> !bb_ln |> flash_unlock
+endif
+ifeq (@(FLASH_ERASEALL),y)
+: busybox |> !bb_ln |> flash_eraseall
+endif
+ifeq (@(IONICE),y)
+: busybox |> !bb_ln |> ionice
+endif
+ifeq (@(INOTIFYD),y)
+: busybox |> !bb_ln |> inotifyd
+endif
+ifeq (@(LAST),y)
+: busybox |> !bb_ln |> last
+endif
+ifeq (@(LESS),y)
+: busybox |> !bb_ln |> less
+endif
+ifeq (@(HDPARM),y)
+: busybox |> !bb_ln |> hdparm
+endif
+ifeq (@(MAKEDEVS),y)
+: busybox |> !bb_ln |> makedevs
+endif
+ifeq (@(MAN),y)
+: busybox |> !bb_ln |> man
+endif
+ifeq (@(MICROCOM),y)
+: busybox |> !bb_ln |> microcom
+endif
+ifeq (@(MOUNTPOINT),y)
+: busybox |> !bb_ln |> mountpoint
+endif
+ifeq (@(MT),y)
+: busybox |> !bb_ln |> mt
+endif
+ifeq (@(RAIDAUTORUN),y)
+: busybox |> !bb_ln |> raidautorun
+endif
+ifeq (@(READAHEAD),y)
+: busybox |> !bb_ln |> readahead
+endif
+ifeq (@(RUNLEVEL),y)
+: busybox |> !bb_ln |> runlevel
+endif
+ifeq (@(RX),y)
+: busybox |> !bb_ln |> rx
+endif
+ifeq (@(SETSID),y)
+: busybox |> !bb_ln |> setsid
+endif
+ifeq (@(STRINGS),y)
+: busybox |> !bb_ln |> strings
+endif
+ifeq (@(TASKSET),y)
+: busybox |> !bb_ln |> taskset
+endif
+ifeq (@(TIME),y)
+: busybox |> !bb_ln |> time
+endif
+ifeq (@(TIMEOUT),y)
+: busybox |> !bb_ln |> timeout
+endif
+ifeq (@(TTYSIZE),y)
+: busybox |> !bb_ln |> ttysize
+endif
+ifeq (@(VOLNAME),y)
+: busybox |> !bb_ln |> volname
+endif
+ifeq (@(WATCHDOG),y)
+: busybox |> !bb_ln |> watchdog
+endif
+ifeq (@(MODPROBE_SMALL),y)
+: busybox |> !bb_ln |> modprobe_small
+endif
+ifeq (@(INSMOD),y)
+: busybox |> !bb_ln |> insmod
+endif
+ifeq (@(RMMOD),y)
+: busybox |> !bb_ln |> rmmod
+endif
+ifeq (@(LSMOD),y)
+: busybox |> !bb_ln |> lsmod
+endif
+ifeq (@(MODPROBE),y)
+: busybox |> !bb_ln |> modprobe
+endif
+ifeq (@(DEPMOD),y)
+: busybox |> !bb_ln |> depmod
+endif
+ifeq (@(ARP),y)
+: busybox |> !bb_ln |> arp
+endif
+ifeq (@(ARPING),y)
+: busybox |> !bb_ln |> arping
+endif
+ifeq (@(BRCTL),y)
+: busybox |> !bb_ln |> brctl
+endif
+ifeq (@(DNSD),y)
+: busybox |> !bb_ln |> dnsd
+endif
+ifeq (@(ETHER_WAKE),y)
+: busybox |> !bb_ln |> ether_wake
+endif
+ifeq (@(FAKEIDENTD),y)
+: busybox |> !bb_ln |> fakeidentd
+endif
+ifeq (@(FTPD),y)
+: busybox |> !bb_ln |> ftpd
+endif
+ifeq (@(FTPGET),y)
+: busybox |> !bb_ln |> ftpget
+endif
+ifeq (@(FTPPUT),y)
+: busybox |> !bb_ln |> ftpput
+endif
+ifeq (@(HOSTNAME),y)
+: busybox |> !bb_ln |> hostname
+endif
+ifeq (@(HTTPD),y)
+: busybox |> !bb_ln |> httpd
+endif
+ifeq (@(IFCONFIG),y)
+: busybox |> !bb_ln |> ifconfig
+endif
+ifeq (@(IFENSLAVE),y)
+: busybox |> !bb_ln |> ifenslave
+endif
+ifeq (@(IFPLUGD),y)
+: busybox |> !bb_ln |> ifplugd
+endif
+ifeq (@(IFUPDOWN),y)
+: busybox |> !bb_ln |> ifupdown
+endif
+ifeq (@(INETD),y)
+: busybox |> !bb_ln |> inetd
+endif
+ifeq (@(IP),y)
+: busybox |> !bb_ln |> ip
+endif
+ifeq (@(IPADDR),y)
+: busybox |> !bb_ln |> ipaddr
+endif
+ifeq (@(IPLINK),y)
+: busybox |> !bb_ln |> iplink
+endif
+ifeq (@(IPROUTE),y)
+: busybox |> !bb_ln |> iproute
+endif
+ifeq (@(IPTUNNEL),y)
+: busybox |> !bb_ln |> iptunnel
+endif
+ifeq (@(IPRULE),y)
+: busybox |> !bb_ln |> iprule
+endif
+ifeq (@(IPCALC),y)
+: busybox |> !bb_ln |> ipcalc
+endif
+ifeq (@(NAMEIF),y)
+: busybox |> !bb_ln |> nameif
+endif
+ifeq (@(NC),y)
+: busybox |> !bb_ln |> nc
+endif
+ifeq (@(NETSTAT),y)
+: busybox |> !bb_ln |> netstat
+endif
+ifeq (@(NSLOOKUP),y)
+: busybox |> !bb_ln |> nslookup
+endif
+ifeq (@(PING),y)
+: busybox |> !bb_ln |> ping
+endif
+ifeq (@(PING6),y)
+: busybox |> !bb_ln |> ping6
+endif
+ifeq (@(PSCAN),y)
+: busybox |> !bb_ln |> pscan
+endif
+ifeq (@(ROUTE),y)
+: busybox |> !bb_ln |> route
+endif
+ifeq (@(SLATTACH),y)
+: busybox |> !bb_ln |> slattach
+endif
+ifeq (@(TELNET),y)
+: busybox |> !bb_ln |> telnet
+endif
+ifeq (@(TELNETD),y)
+: busybox |> !bb_ln |> telnetd
+endif
+ifeq (@(TFTP),y)
+: busybox |> !bb_ln |> tftp
+endif
+ifeq (@(TFTPD),y)
+: busybox |> !bb_ln |> tftpd
+endif
+ifeq (@(TRACEROUTE),y)
+: busybox |> !bb_ln |> traceroute
+endif
+ifeq (@(VCONFIG),y)
+: busybox |> !bb_ln |> vconfig
+endif
+ifeq (@(WGET),y)
+: busybox |> !bb_ln |> wget
+endif
+ifeq (@(ZCIP),y)
+: busybox |> !bb_ln |> zcip
+endif
+ifeq (@(TCPSVD),y)
+: busybox |> !bb_ln |> tcpsvd
+endif
+ifeq (@(TUNCTL),y)
+: busybox |> !bb_ln |> tunctl
+endif
+ifeq (@(UDPSVD),y)
+: busybox |> !bb_ln |> udpsvd
+endif
+ifeq (@(LPD),y)
+: busybox |> !bb_ln |> lpd
+endif
+ifeq (@(LPR),y)
+: busybox |> !bb_ln |> lpr
+endif
+ifeq (@(LPQ),y)
+: busybox |> !bb_ln |> lpq
+endif
+ifeq (@(FREE),y)
+: busybox |> !bb_ln |> free
+endif
+ifeq (@(FUSER),y)
+: busybox |> !bb_ln |> fuser
+endif
+ifeq (@(KILL),y)
+: busybox |> !bb_ln |> kill
+endif
+ifeq (@(KILLALL),y)
+: busybox |> !bb_ln |> killall
+endif
+ifeq (@(KILLALL5),y)
+: busybox |> !bb_ln |> killall5
+endif
+ifeq (@(NMETER),y)
+: busybox |> !bb_ln |> nmeter
+endif
+ifeq (@(PGREP),y)
+: busybox |> !bb_ln |> pgrep
+endif
+ifeq (@(PIDOF),y)
+: busybox |> !bb_ln |> pidof
+endif
+ifeq (@(PKILL),y)
+: busybox |> !bb_ln |> pkill
+endif
+ifeq (@(PS),y)
+: busybox |> !bb_ln |> ps
+endif
+ifeq (@(RENICE),y)
+: busybox |> !bb_ln |> renice
+endif
+ifeq (@(TOP),y)
+: busybox |> !bb_ln |> top
+endif
+ifeq (@(UPTIME),y)
+: busybox |> !bb_ln |> uptime
+endif
+ifeq (@(WATCH),y)
+: busybox |> !bb_ln |> watch
+endif
+ifeq (@(RUNSV),y)
+: busybox |> !bb_ln |> runsv
+endif
+ifeq (@(RUNSVDIR),y)
+: busybox |> !bb_ln |> runsvdir
+endif
+ifeq (@(SV),y)
+: busybox |> !bb_ln |> sv
+endif
+ifeq (@(SVLOGD),y)
+: busybox |> !bb_ln |> svlogd
+endif
+ifeq (@(CHPST),y)
+: busybox |> !bb_ln |> chpst
+endif
+ifeq (@(SETUIDGID),y)
+: busybox |> !bb_ln |> setuidgid
+endif
+ifeq (@(ENVUIDGID),y)
+: busybox |> !bb_ln |> envuidgid
+endif
+ifeq (@(ENVDIR),y)
+: busybox |> !bb_ln |> envdir
+endif
+ifeq (@(SOFTLIMIT),y)
+: busybox |> !bb_ln |> softlimit
+endif
+ifeq (@(ASH),y)
+: busybox |> !bb_ln |> ash
+endif
+ifeq (@(HUSH),y)
+: busybox |> !bb_ln |> hush
+endif
+ifeq (@(LASH),y)
+: busybox |> !bb_ln |> lash
+endif
+ifeq (@(MSH),y)
+: busybox |> !bb_ln |> msh
+endif
+ifeq (@(CTTYHACK),y)
+: busybox |> !bb_ln |> cttyhack
+endif
+ifeq (@(SYSLOGD),y)
+: busybox |> !bb_ln |> syslogd
+endif
+ifeq (@(LOGREAD),y)
+: busybox |> !bb_ln |> logread
+endif
+ifeq (@(KLOGD),y)
+: busybox |> !bb_ln |> klogd
+endif
+ifeq (@(LOGGER),y)
+: busybox |> !bb_ln |> logger
+endif
+ifeq (@(ACPID),y)
+: busybox |> !bb_ln |> acpid
+endif
+ifeq (@(BLKID),y)
+: busybox |> !bb_ln |> blkid
+endif
+ifeq (@(DMESG),y)
+: busybox |> !bb_ln |> dmesg
+endif
+ifeq (@(FBSET),y)
+: busybox |> !bb_ln |> fbset
+endif
+ifeq (@(FDFLUSH),y)
+: busybox |> !bb_ln |> fdflush
+endif
+ifeq (@(FDFORMAT),y)
+: busybox |> !bb_ln |> fdformat
+endif
+ifeq (@(FDISK),y)
+: busybox |> !bb_ln |> fdisk
+endif
+ifeq (@(FINDFS),y)
+: busybox |> !bb_ln |> findfs
+endif
+ifeq (@(FREERAMDISK),y)
+: busybox |> !bb_ln |> freeramdisk
+endif
+ifeq (@(GETOPT),y)
+: busybox |> !bb_ln |> getopt
+endif
+ifeq (@(HEXDUMP),y)
+: busybox |> !bb_ln |> hexdump
+endif
+ifeq (@(HD),y)
+: busybox |> !bb_ln |> hd
+endif
+ifeq (@(HWCLOCK),y)
+: busybox |> !bb_ln |> hwclock
+endif
+ifeq (@(IPCRM),y)
+: busybox |> !bb_ln |> ipcrm
+endif
+ifeq (@(IPCS),y)
+: busybox |> !bb_ln |> ipcs
+endif
+ifeq (@(LOSETUP),y)
+: busybox |> !bb_ln |> losetup
+endif
+ifeq (@(MDEV),y)
+: busybox |> !bb_ln |> mdev
+endif
+ifeq (@(MKSWAP),y)
+: busybox |> !bb_ln |> mkswap
+endif
+ifeq (@(MORE),y)
+: busybox |> !bb_ln |> more
+endif
+ifeq (@(VOLUMEID),y)
+: busybox |> !bb_ln |> volumeid
+endif
+ifeq (@(MOUNT),y)
+: busybox |> !bb_ln |> mount
+endif
+ifeq (@(PIVOT_ROOT),y)
+: busybox |> !bb_ln |> pivot_root
+endif
+ifeq (@(RDATE),y)
+: busybox |> !bb_ln |> rdate
+endif
+ifeq (@(RDEV),y)
+: busybox |> !bb_ln |> rdev
+endif
+ifeq (@(READPROFILE),y)
+: busybox |> !bb_ln |> readprofile
+endif
+ifeq (@(RTCWAKE),y)
+: busybox |> !bb_ln |> rtcwake
+endif
+ifeq (@(SCRIPT),y)
+: busybox |> !bb_ln |> script
+endif
+ifeq (@(SCRIPTREPLAY),y)
+: busybox |> !bb_ln |> scriptreplay
+endif
+ifeq (@(SETARCH),y)
+: busybox |> !bb_ln |> setarch
+endif
+ifeq (@(SWAPONOFF),y)
+: busybox |> !bb_ln |> swaponoff
+endif
+ifeq (@(SWITCH_ROOT),y)
+: busybox |> !bb_ln |> switch_root
+endif
+ifeq (@(UMOUNT),y)
+: busybox |> !bb_ln |> umount
+endif

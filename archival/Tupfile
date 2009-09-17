@@ -16,5 +16,6 @@ lib-@(RPM)		+= rpm.c
 lib-@(TAR)		+= tar.c
 lib-@(UNCOMPRESS)	+= bbunzip.c
 lib-@(UNZIP)		+= unzip.c
+lib-y += libunarchive/built-in.o
 
 include $(BUSYBOX_ROOT)/busybox.tup

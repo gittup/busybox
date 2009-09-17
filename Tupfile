@@ -1,14 +1,25 @@
 include_rules
 
-libs-y += archival/libunarchive/built-in.o
-libs-y += coreutils/libcoreutils/built-in.o
+libs-y += archival/built-in.o
+libs-y += console-tools/built-in.o
 libs-y += coreutils/built-in.o
+libs-y += debianutils/built-in.o
+libs-y += e2fsprogs/built-in.o
 libs-y += editors/built-in.o
+libs-y += findutils/built-in.o
 libs-y += init/built-in.o
 libs-y += libbb/built-in.o
 libs-y += libpwdgrp/built-in.o
+libs-y += loginutils/built-in.o
+libs-y += mailutils/built-in.o
+libs-y += miscutils/built-in.o
+libs-y += modutils/built-in.o
+libs-y += networking/built-in.o
+libs-y += printutils/built-in.o
 libs-y += procps/built-in.o
+libs-y += runit/built-in.o
 libs-y += shell/built-in.o
+libs-y += sysklogd/built-in.o
 libs-y += util-linux/built-in.o
 
 : $(libs-y) | $(compiler_files) |> ^ LINK %o^ $(CC_LD) %f -o %o -B$(UCLIBC_ROOT)/libc |> busybox

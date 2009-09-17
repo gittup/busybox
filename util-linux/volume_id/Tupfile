@@ -1,0 +1,24 @@
+include_rules
+
+lib-@(BLKID)                             += get_devname.c
+lib-@(FINDFS)                            += get_devname.c
+lib-@(FEATURE_MOUNT_LABEL)               += get_devname.c
+lib-@(VOLUMEID)                          += volume_id.c util.c
+lib-@(FEATURE_VOLUMEID_EXT)              += ext.c
+lib-@(FEATURE_VOLUMEID_FAT)              += fat.c
+lib-@(FEATURE_VOLUMEID_HFS)              += hfs.c
+lib-@(FEATURE_VOLUMEID_ISO9660)          += iso9660.c
+lib-@(FEATURE_VOLUMEID_JFS)              += jfs.c
+lib-@(FEATURE_VOLUMEID_LINUXRAID)        += linux_raid.c
+lib-@(FEATURE_VOLUMEID_LINUXSWAP)        += linux_swap.c
+lib-@(FEATURE_VOLUMEID_NTFS)             += ntfs.c
+lib-@(FEATURE_VOLUMEID_REISERFS)         += reiserfs.c
+lib-@(FEATURE_VOLUMEID_UDF)              += udf.c
+lib-@(FEATURE_VOLUMEID_XFS)              += xfs.c
+lib-@(FEATURE_VOLUMEID_CRAMFS)           += cramfs.c
+lib-@(FEATURE_VOLUMEID_ROMFS)            += romfs.c
+lib-@(FEATURE_VOLUMEID_SYSV)             += sysv.c
+lib-@(FEATURE_VOLUMEID_LUKS)             += luks.c
+lib-@(FEATURE_VOLUMEID_OCFS2)            += ocfs2.c
+
+include $(BUSYBOX_ROOT)/busybox.tup

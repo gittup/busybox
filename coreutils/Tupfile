@@ -92,5 +92,6 @@ lib-@(WC)        += wc.c
 lib-@(WHO)       += who.c
 lib-@(WHOAMI)    += whoami.c
 lib-@(YES)       += yes.c
+lib-y += libcoreutils/built-in.o
 
 include $(BUSYBOX_ROOT)/busybox.tup

@@ -38,5 +38,7 @@ lib-@(WGET)         += wget.c
 lib-@(ZCIP)         += zcip.c
 lib-@(TCPSVD)       += tcpudp.c tcpudp_perhost.c
 lib-@(UDPSVD)       += tcpudp.c tcpudp_perhost.c
+lib-y += libiproute/built-in.o
+lib-y += udhcp/built-in.o
 
 include $(BUSYBOX_ROOT)/busybox.tup

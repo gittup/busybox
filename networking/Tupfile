@@ -1,6 +1,7 @@
 include_rules
 
-lib-@(ARP)          += arp.c interface.c
+interface-@(ARP) = y
+lib-@(ARP)          += arp.c
 lib-@(ARPING)       += arping.c
 lib-@(BRCTL)        += brctl.c
 lib-@(DNSD)         += dnsd.c
@@ -11,8 +12,11 @@ lib-@(FTPGET)       += ftpgetput.c
 lib-@(FTPPUT)       += ftpgetput.c
 lib-@(HOSTNAME)     += hostname.c
 lib-@(HTTPD)        += httpd.c
-lib-@(IFCONFIG)     += ifconfig.c interface.c
-lib-@(IFENSLAVE)    += ifenslave.c interface.c
+interface-@(IFCONFIG) = y
+lib-@(IFCONFIG)     += ifconfig.c
+interface-@(IFENSLAVE) = y
+lib-@(IFENSLAVE)    += ifenslave.c
+lib-$(interface-y)  += interface.c
 lib-@(IFPLUGD)      += ifplugd.c
 lib-@(IFUPDOWN)     += ifupdown.c
 lib-@(INETD)        += inetd.c

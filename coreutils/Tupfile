@@ -2,10 +2,11 @@ include_rules
 
 lib-@(BASENAME)  += basename.c
 lib-@(CAL)       += cal.c
-lib-@(CAT)       += cat.c
-lib-@(MORE)      += cat.c
-lib-@(LESS)      += cat.c
-lib-@(CRONTAB)   += cat.c
+cat-@(CAT)       = y
+cat-@(MORE)      = y
+cat-@(LESS)      = y
+cat-@(CRONTAB)   = y
+lib-$(cat-y) += cat.c
 lib-@(CATV)      += catv.c
 chown-@(CHGRP) = chown.c
 chown-@(CHOWN) = chown.c

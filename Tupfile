@@ -22,4 +22,4 @@ libs-y += shell/built-in.o
 libs-y += sysklogd/built-in.o
 libs-y += util-linux/built-in.o
 
-: $(libs-y) | $(compiler_files) |> ^ LINK %o^ $(CC_LD) %f -o %o -B$(UCLIBC_ROOT)/libc |> busybox
+: $(libs-y) |> !ld |> busybox

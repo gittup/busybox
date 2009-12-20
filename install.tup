@@ -408,6 +408,12 @@ endif
 ifeq (@(HALT),y)
 : busybox |> !ln |> halt
 endif
+ifeq (@(HALT),y)
+: busybox |> !ln |> reboot
+endif
+ifeq (@(HALT),y)
+: busybox |> !ln |> shutdown
+endif
 ifeq (@(MESG),y)
 : busybox |> !ln |> mesg
 endif

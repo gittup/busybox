@@ -7,7 +7,7 @@ CFLAGS += -DNDEBUG
 CFLAGS += -D_LARGEFILE_SOURCE
 CFLAGS += -D_LARGEFILE64_SOURCE
 CFLAGS += -D_FILE_OFFSET_BITS=64
-CFLAGS += -D"BB_VER=KBUILD_STR(gittup)"
+CFLAGS += -DBB_VER=\"gittup\"
 CFLAGS += -DBB_BT=\"yo\"
 CFLAGS += -Wall
 CFLAGS += -Wshadow
@@ -37,3 +37,6 @@ CFLAGS += -falign-loops=1
 CFLAGS += -march=i386
 CFLAGS += -mpreferred-stack-boundary=2
 CFLAGS += -Wno-strict-aliasing
+CFLAGS += -ftup-busybox
+CFLAGS += -ftup-uclibc
+CFLAGS += -ftup-linux

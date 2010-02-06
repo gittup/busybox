@@ -1,6 +1,6 @@
-!cc_kbuild.c = | $(compiler_files) $(generated_headers) |> ^ CC %f^ $(CC) -c %f -o %o $(BASE_CFLAGS) $(CFLAGS) $(CFLAGS_%e) $(CFLAGS_%f) -D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(%B)" -D"KBUILD_MODNAME=KBUILD_STR(%B)" -ftup-busybox -ftup-uclibc -ftup-linux |>
-!cc_kbuild.o = |> |>
-: foreach $(lib-y) |> !cc_kbuild |> %B.o {objs}
+!busybox_cc.c = !cc
+!busybox_cc.o = |> |>
+: foreach $(lib-y) | $(generated_headers) |> !busybox_cc |> %B.o {objs}
 
 !busybox_ld = | $(compiler_files) |> ^ LD %o^ $(CC_LD) -nostdlib -B$(UCLIBC_ROOT)/libc -Wl,-r -o %o %f |>
 !busybox_ld.EMPTY = |> ^ EMPTY %o^ rm -f %o; ar crs %o |>

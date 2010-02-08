@@ -1,12 +1,9 @@
 include_rules
 
-getopt-@(MKFIFO) = getopt_mk_fifo_nod.c
-getopt-@(MKNOD) = getopt_mk_fifo_nod.c
-lib-y += $(getopt-y)
-
-cp_mv_stat-@(INSTALL) = cp_mv_stat.c
-cp_mv_stat-@(CP) = cp_mv_stat.c
-cp_mv_stat-@(MV) = cp_mv_stat.c
-lib-y += $(cp_mv_stat-y)
+lib-@(MKFIFO)	+= getopt_mk_fifo_nod.c
+lib-@(MKNOD)	+= getopt_mk_fifo_nod.c
+lib-@(INSTALL)	+= cp_mv_stat.c
+lib-@(CP)	+= cp_mv_stat.c
+lib-@(MV)	+= cp_mv_stat.c
 
 include $(BUSYBOX_ROOT)/busybox.tup

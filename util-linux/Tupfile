@@ -33,6 +33,7 @@ lib-@(SETARCH)           += setarch.c
 lib-@(SWAPONOFF)         += swaponoff.c
 lib-@(SWITCH_ROOT)       += switch_root.c
 lib-@(UMOUNT)            += umount.c
+
 lib-y += volume_id/built-in.o
 
 include $(BUSYBOX_ROOT)/busybox.tup

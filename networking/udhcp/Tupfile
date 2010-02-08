@@ -6,10 +6,9 @@ lib-@(APP_UDHCPD)        += common.c options.c packet.c \
                                    signalpipe.c socket.c
 lib-@(APP_UDHCPC)        += dhcpc.c clientpacket.c clientsocket.c \
                                    script.c
-arpping-@(FEATURE_UDHCPC_ARPING) = arpping.c
-arpping-@(APP_UDHCPD) = arpping.c
-lib-y += $(arpping-y)
-lib-@(APP_UDHCPD)        += dhcpd.c files.c leases.c \
+UDHCPC_NEEDS_ARPING-@(FEATURE_UDHCPC_ARPING) = y
+lib-$(UDHCPC_NEEDS_ARPING-y)    += arpping.c
+lib-@(APP_UDHCPD)        += dhcpd.c arpping.c files.c leases.c \
                                    serverpacket.c static_leases.c
 lib-@(APP_DUMPLEASES)    += dumpleases.c
 lib-@(APP_DHCPRELAY)     += dhcprelay.c

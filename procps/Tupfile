@@ -2,9 +2,8 @@ include_rules
 
 lib-@(FREE)	+= free.c
 lib-@(FUSER)	+= fuser.c
-kill-@(KILL) = kill.c
-kill-@(ASH) = kill.c
-lib-y += $(kill-y)
+lib-@(KILL)	+= kill.c
+lib-@(ASH)	+= kill.c
 lib-@(NMETER)    += nmeter.c
 lib-@(PGREP)	+= pgrep.c
 lib-@(PKILL)	+= pgrep.c

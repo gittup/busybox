@@ -1,7 +1,6 @@
 include_rules
 
-interface-@(ARP) = y
-lib-@(ARP)          += arp.c
+lib-@(ARP)          += arp.c interface.c
 lib-@(ARPING)       += arping.c
 lib-@(BRCTL)        += brctl.c
 lib-@(DNSD)         += dnsd.c
@@ -12,11 +11,8 @@ lib-@(FTPGET)       += ftpgetput.c
 lib-@(FTPPUT)       += ftpgetput.c
 lib-@(HOSTNAME)     += hostname.c
 lib-@(HTTPD)        += httpd.c
-interface-@(IFCONFIG) = y
-lib-@(IFCONFIG)     += ifconfig.c
-interface-@(IFENSLAVE) = y
-lib-@(IFENSLAVE)    += ifenslave.c
-lib-$(interface-y)  += interface.c
+lib-@(IFCONFIG)     += ifconfig.c interface.c
+lib-@(IFENSLAVE)    += ifenslave.c interface.c
 lib-@(IFPLUGD)      += ifplugd.c
 lib-@(IFUPDOWN)     += ifupdown.c
 lib-@(INETD)        += inetd.c
@@ -42,6 +38,7 @@ lib-@(WGET)         += wget.c
 lib-@(ZCIP)         += zcip.c
 lib-@(TCPSVD)       += tcpudp.c tcpudp_perhost.c
 lib-@(UDPSVD)       += tcpudp.c tcpudp_perhost.c
+
 lib-y += libiproute/built-in.o
 lib-y += udhcp/built-in.o
 

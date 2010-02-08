@@ -1,935 +1,314 @@
+link-@(AR) += ar
+link-@(BUNZIP2) += bunzip2
+link-@(BZIP2) += bzip2
+link-@(CPIO) += cpio
+link-@(DPKG) += dpkg
+link-@(DPKG_DEB) += dpkg_deb
+link-@(GUNZIP) += gunzip
+link-@(GZIP) += gzip
+link-@(LZOP) += lzop
+link-@(RPM2CPIO) += rpm2cpio
+link-@(RPM) += rpm
+link-@(TAR) += tar
+link-@(UNCOMPRESS) += uncompress
+link-@(UNLZMA) += unlzma
+link-@(UNZIP) += unzip
+link-@(CHVT) += chvt
+link-@(CLEAR) += clear
+link-@(DEALLOCVT) += deallocvt
+link-@(DUMPKMAP) += dumpkmap
+link-@(KBD_MODE) += kbd_mode
+link-@(LOADFONT) += loadfont
+link-@(LOADKMAP) += loadkmap
+link-@(OPENVT) += openvt
+link-@(RESET) += reset
+link-@(RESIZE) += resize
+link-@(SETCONSOLE) += setconsole
+link-@(SETFONT) += setfont
+link-@(SETKEYCODES) += setkeycodes
+link-@(SETLOGCONS) += setlogcons
+link-@(SHOWKEY) += showkey
+link-@(BASENAME) += basename
+link-@(CAL) += cal
+link-@(CAT) += cat
+link-@(CATV) += catv
+link-@(CHGRP) += chgrp
+link-@(CHMOD) += chmod
+link-@(CHOWN) += chown
+link-@(CHROOT) += chroot
+link-@(CKSUM) += cksum
+link-@(COMM) += comm
+link-@(CP) += cp
+link-@(CUT) += cut
+link-@(DATE) += date
+link-@(DD) += dd
+link-@(DF) += df
+link-@(DIRNAME) += dirname
+link-@(DOS2UNIX) += dos2unix
+link-@(UNIX2DOS) += unix2dos
+link-@(DU) += du
+link-@(ECHO) += echo
+link-@(ENV) += env
+link-@(EXPAND) += expand
+link-@(EXPR) += expr
+link-@(FALSE) += false
+link-@(FOLD) += fold
+link-@(FSYNC) += fsync
+link-@(HEAD) += head
+link-@(HOSTID) += hostid
+link-@(ID) += id
+link-@(INSTALL) += install
+link-@(LENGTH) += length
+link-@(LN) += ln
+link-@(LOGNAME) += logname
+link-@(LS) += ls
+link-@(MD5SUM) += md5sum
+link-@(MKDIR) += mkdir
+link-@(MKFIFO) += mkfifo
+link-@(MKNOD) += mknod
+link-@(MV) += mv
+link-@(NICE) += nice
+link-@(NOHUP) += nohup
+link-@(OD) += od
+link-@(PRINTENV) += printenv
+link-@(PRINTF) += printf
+link-@(PWD) += pwd
+link-@(READLINK) += readlink
+link-@(REALPATH) += realpath
+link-@(RM) += rm
+link-@(RMDIR) += rmdir
+link-@(SEQ) += seq
+link-@(SHA1SUM) += sha1sum
+link-@(SHA256SUM) += sha256sum
+link-@(SHA512SUM) += sha512sum
+link-@(SLEEP) += sleep
+link-@(SORT) += sort
+link-@(SPLIT) += split
+link-@(STAT) += stat
+link-@(STTY) += stty
+link-@(SUM) += sum
+link-@(SYNC) += sync
+link-@(TAC) += tac
+link-@(TAIL) += tail
+link-@(TEE) += tee
+link-@(TEST) += test
+link-@(TOUCH) += touch
+link-@(TR) += tr
+link-@(TRUE) += true
+link-@(TTY) += tty
+link-@(UNAME) += uname
+link-@(UNEXPAND) += unexpand
+link-@(UNIQ) += uniq
+link-@(USLEEP) += usleep
+link-@(UUDECODE) += uudecode
+link-@(UUENCODE) += uuencode
+link-@(WC) += wc
+link-@(WHO) += who
+link-@(WHOAMI) += whoami
+link-@(YES) += yes
+link-@(MKTEMP) += mktemp
+link-@(PIPE_PROGRESS) += pipe_progress
+link-@(RUN_PARTS) += run_parts
+link-@(START_STOP_DAEMON) += start_stop_daemon
+link-@(WHICH) += which
+link-@(CHATTR) += chattr
+link-@(FSCK) += fsck
+link-@(LSATTR) += lsattr
+link-@(CHATTR) += chattr
+link-@(E2FSCK) += e2fsck
+link-@(FSCK) += fsck
+link-@(LSATTR) += lsattr
+link-@(MKE2FS) += mke2fs
+link-@(TUNE2FS) += tune2fs
+link-@(E2LABEL) += e2label
+link-@(FINDFS) += findfs
+link-@(AWK) += awk
+link-@(CMP) += cmp
+link-@(DIFF) += diff
+link-@(ED) += ed
+link-@(PATCH) += patch
+link-@(SED) += sed
+link-@(VI) += vi
+link-@(FIND) += find
+link-@(GREP) += grep
+link-@(XARGS) += xargs
+link-@(INIT) += init
+link-@(HALT) += halt
+link-@(HALT) += reboot
+link-@(HALT) += shutdown
+link-@(MESG) += mesg
+link-@(ADDGROUP) += addgroup
+link-@(DELGROUP) += delgroup
+link-@(ADDUSER) += adduser
+link-@(DELUSER) += deluser
+link-@(GETTY) += getty
+link-@(LOGIN) += login
+link-@(PAM) += pam
+link-@(PASSWD) += passwd
+link-@(CRYPTPW) += cryptpw
+link-@(CHPASSWD) += chpasswd
+link-@(SU) += su
+link-@(SULOGIN) += sulogin
+link-@(VLOCK) += vlock
+link-@(MAKEMIME) += makemime
+link-@(POPMAILDIR) += popmaildir
+link-@(REFORMIME) += reformime
+link-@(SENDMAIL) += sendmail
+link-@(ADJTIMEX) += adjtimex
+link-@(BBCONFIG) += bbconfig
+link-@(BEEP) += beep
+link-@(CHAT) += chat
+link-@(CHRT) += chrt
+link-@(CROND) += crond
+link-@(CRONTAB) += crontab
+link-@(DC) += dc
+link-@(DEVFSD) += devfsd
+link-@(DEVMEM) += devmem
+link-@(EJECT) += eject
+link-@(FBSPLASH) += fbsplash
+link-@(FLASH_LOCK) += flash_lock
+link-@(FLASH_UNLOCK) += flash_unlock
+link-@(FLASH_ERASEALL) += flash_eraseall
+link-@(IONICE) += ionice
+link-@(INOTIFYD) += inotifyd
+link-@(LAST) += last
+link-@(LESS) += less
+link-@(HDPARM) += hdparm
+link-@(MAKEDEVS) += makedevs
+link-@(MAN) += man
+link-@(MICROCOM) += microcom
+link-@(MOUNTPOINT) += mountpoint
+link-@(MT) += mt
+link-@(RAIDAUTORUN) += raidautorun
+link-@(READAHEAD) += readahead
+link-@(RUNLEVEL) += runlevel
+link-@(RX) += rx
+link-@(SETSID) += setsid
+link-@(STRINGS) += strings
+link-@(TASKSET) += taskset
+link-@(TIME) += time
+link-@(TIMEOUT) += timeout
+link-@(TTYSIZE) += ttysize
+link-@(VOLNAME) += volname
+link-@(WATCHDOG) += watchdog
+link-@(MODPROBE_SMALL) += modprobe_small
+link-@(INSMOD) += insmod
+link-@(RMMOD) += rmmod
+link-@(LSMOD) += lsmod
+link-@(MODPROBE) += modprobe
+link-@(DEPMOD) += depmod
+link-@(ARP) += arp
+link-@(ARPING) += arping
+link-@(BRCTL) += brctl
+link-@(DNSD) += dnsd
+link-@(ETHER_WAKE) += ether_wake
+link-@(FAKEIDENTD) += fakeidentd
+link-@(FTPD) += ftpd
+link-@(FTPGET) += ftpget
+link-@(FTPPUT) += ftpput
+link-@(HOSTNAME) += hostname
+link-@(HTTPD) += httpd
+link-@(IFCONFIG) += ifconfig
+link-@(IFENSLAVE) += ifenslave
+link-@(IFPLUGD) += ifplugd
+link-@(IFUPDOWN) += ifupdown
+link-@(INETD) += inetd
+link-@(IP) += ip
+link-@(IPADDR) += ipaddr
+link-@(IPLINK) += iplink
+link-@(IPROUTE) += iproute
+link-@(IPTUNNEL) += iptunnel
+link-@(IPRULE) += iprule
+link-@(IPCALC) += ipcalc
+link-@(NAMEIF) += nameif
+link-@(NC) += nc
+link-@(NETSTAT) += netstat
+link-@(NSLOOKUP) += nslookup
+link-@(PING) += ping
+link-@(PING6) += ping6
+link-@(PSCAN) += pscan
+link-@(ROUTE) += route
+link-@(SLATTACH) += slattach
+link-@(TELNET) += telnet
+link-@(TELNETD) += telnetd
+link-@(TFTP) += tftp
+link-@(TFTPD) += tftpd
+link-@(TRACEROUTE) += traceroute
+link-@(VCONFIG) += vconfig
+link-@(WGET) += wget
+link-@(ZCIP) += zcip
+link-@(TCPSVD) += tcpsvd
+link-@(TUNCTL) += tunctl
+link-@(UDPSVD) += udpsvd
+link-@(LPD) += lpd
+link-@(LPR) += lpr
+link-@(LPQ) += lpq
+link-@(FREE) += free
+link-@(FUSER) += fuser
+link-@(KILL) += kill
+link-@(KILLALL) += killall
+link-@(KILLALL5) += killall5
+link-@(NMETER) += nmeter
+link-@(PGREP) += pgrep
+link-@(PIDOF) += pidof
+link-@(PKILL) += pkill
+link-@(PS) += ps
+link-@(RENICE) += renice
+link-@(TOP) += top
+link-@(UPTIME) += uptime
+link-@(WATCH) += watch
+link-@(RUNSV) += runsv
+link-@(RUNSVDIR) += runsvdir
+link-@(SV) += sv
+link-@(SVLOGD) += svlogd
+link-@(CHPST) += chpst
+link-@(SETUIDGID) += setuidgid
+link-@(ENVUIDGID) += envuidgid
+link-@(ENVDIR) += envdir
+link-@(SOFTLIMIT) += softlimit
+link-@(ASH) += ash
+link-@(HUSH) += hush
+link-@(FEATURE_SH_IS_ASH) += sh
+link-@(FEATURE_SH_IS_HUSH) += sh
+link-@(LASH) += lash
+link-@(MSH) += msh
+link-@(CTTYHACK) += cttyhack
+link-@(SYSLOGD) += syslogd
+link-@(LOGREAD) += logread
+link-@(KLOGD) += klogd
+link-@(LOGGER) += logger
+link-@(ACPID) += acpid
+link-@(BLKID) += blkid
+link-@(DMESG) += dmesg
+link-@(FBSET) += fbset
+link-@(FDFLUSH) += fdflush
+link-@(FDFORMAT) += fdformat
+link-@(FDISK) += fdisk
+link-@(FINDFS) += findfs
+link-@(FREERAMDISK) += freeramdisk
+link-@(GETOPT) += getopt
+link-@(HEXDUMP) += hexdump
+link-@(HD) += hd
+link-@(HWCLOCK) += hwclock
+link-@(IPCRM) += ipcrm
+link-@(IPCS) += ipcs
+link-@(LOSETUP) += losetup
+link-@(MDEV) += mdev
+link-@(MKSWAP) += mkswap
+link-@(MORE) += more
+link-@(VOLUMEID) += volumeid
+link-@(MOUNT) += mount
+link-@(PIVOT_ROOT) += pivot_root
+link-@(RDATE) += rdate
+link-@(RDEV) += rdev
+link-@(READPROFILE) += readprofile
+link-@(RTCWAKE) += rtcwake
+link-@(SCRIPT) += script
+link-@(SCRIPTREPLAY) += scriptreplay
+link-@(SETARCH) += setarch
+link-@(SWAPONOFF) += swaponoff
+link-@(SWITCH_ROOT) += switch_root
+link-@(UMOUNT) += umount
+
 : $(GITTUP_ROOT)/busybox/busybox |> !cp |> busybox
-# This could obviously benefit from some better tup syntax
-ifeq (@(AR),y)
-: busybox |> !ln |> ar
-endif
-ifeq (@(BUNZIP2),y)
-: busybox |> !ln |> bunzip2
-endif
-ifeq (@(BZIP2),y)
-: busybox |> !ln |> bzip2
-endif
-ifeq (@(CPIO),y)
-: busybox |> !ln |> cpio
-endif
-ifeq (@(DPKG),y)
-: busybox |> !ln |> dpkg
-endif
-ifeq (@(DPKG_DEB),y)
-: busybox |> !ln |> dpkg_deb
-endif
-ifeq (@(GUNZIP),y)
-: busybox |> !ln |> gunzip
-endif
-ifeq (@(GZIP),y)
-: busybox |> !ln |> gzip
-endif
-ifeq (@(LZOP),y)
-: busybox |> !ln |> lzop
-endif
-ifeq (@(RPM2CPIO),y)
-: busybox |> !ln |> rpm2cpio
-endif
-ifeq (@(RPM),y)
-: busybox |> !ln |> rpm
-endif
-ifeq (@(TAR),y)
-: busybox |> !ln |> tar
-endif
-ifeq (@(UNCOMPRESS),y)
-: busybox |> !ln |> uncompress
-endif
-ifeq (@(UNLZMA),y)
-: busybox |> !ln |> unlzma
-endif
-ifeq (@(UNZIP),y)
-: busybox |> !ln |> unzip
-endif
-ifeq (@(CHVT),y)
-: busybox |> !ln |> chvt
-endif
-ifeq (@(CLEAR),y)
-: busybox |> !ln |> clear
-endif
-ifeq (@(DEALLOCVT),y)
-: busybox |> !ln |> deallocvt
-endif
-ifeq (@(DUMPKMAP),y)
-: busybox |> !ln |> dumpkmap
-endif
-ifeq (@(KBD_MODE),y)
-: busybox |> !ln |> kbd_mode
-endif
-ifeq (@(LOADFONT),y)
-: busybox |> !ln |> loadfont
-endif
-ifeq (@(LOADKMAP),y)
-: busybox |> !ln |> loadkmap
-endif
-ifeq (@(OPENVT),y)
-: busybox |> !ln |> openvt
-endif
-ifeq (@(RESET),y)
-: busybox |> !ln |> reset
-endif
-ifeq (@(RESIZE),y)
-: busybox |> !ln |> resize
-endif
-ifeq (@(SETCONSOLE),y)
-: busybox |> !ln |> setconsole
-endif
-ifeq (@(SETFONT),y)
-: busybox |> !ln |> setfont
-endif
-ifeq (@(SETKEYCODES),y)
-: busybox |> !ln |> setkeycodes
-endif
-ifeq (@(SETLOGCONS),y)
-: busybox |> !ln |> setlogcons
-endif
-ifeq (@(SHOWKEY),y)
-: busybox |> !ln |> showkey
-endif
-ifeq (@(BASENAME),y)
-: busybox |> !ln |> basename
-endif
-ifeq (@(CAL),y)
-: busybox |> !ln |> cal
-endif
-ifeq (@(CAT),y)
-: busybox |> !ln |> cat
-endif
-ifeq (@(CATV),y)
-: busybox |> !ln |> catv
-endif
-ifeq (@(CHGRP),y)
-: busybox |> !ln |> chgrp
-endif
-ifeq (@(CHMOD),y)
-: busybox |> !ln |> chmod
-endif
-ifeq (@(CHOWN),y)
-: busybox |> !ln |> chown
-endif
-ifeq (@(CHROOT),y)
-: busybox |> !ln |> chroot
-endif
-ifeq (@(CKSUM),y)
-: busybox |> !ln |> cksum
-endif
-ifeq (@(COMM),y)
-: busybox |> !ln |> comm
-endif
-ifeq (@(CP),y)
-: busybox |> !ln |> cp
-endif
-ifeq (@(CUT),y)
-: busybox |> !ln |> cut
-endif
-ifeq (@(DATE),y)
-: busybox |> !ln |> date
-endif
-ifeq (@(DD),y)
-: busybox |> !ln |> dd
-endif
-ifeq (@(DF),y)
-: busybox |> !ln |> df
-endif
-ifeq (@(DIRNAME),y)
-: busybox |> !ln |> dirname
-endif
-ifeq (@(DOS2UNIX),y)
-: busybox |> !ln |> dos2unix
-endif
-ifeq (@(UNIX2DOS),y)
-: busybox |> !ln |> unix2dos
-endif
-ifeq (@(DU),y)
-: busybox |> !ln |> du
-endif
-ifeq (@(ECHO),y)
-: busybox |> !ln |> echo
-endif
-ifeq (@(ENV),y)
-: busybox |> !ln |> env
-endif
-ifeq (@(EXPAND),y)
-: busybox |> !ln |> expand
-endif
-ifeq (@(EXPR),y)
-: busybox |> !ln |> expr
-endif
-ifeq (@(FALSE),y)
-: busybox |> !ln |> false
-endif
-ifeq (@(FOLD),y)
-: busybox |> !ln |> fold
-endif
-ifeq (@(FSYNC),y)
-: busybox |> !ln |> fsync
-endif
-ifeq (@(HEAD),y)
-: busybox |> !ln |> head
-endif
-ifeq (@(HOSTID),y)
-: busybox |> !ln |> hostid
-endif
-ifeq (@(ID),y)
-: busybox |> !ln |> id
-endif
-ifeq (@(INSTALL),y)
-: busybox |> !ln |> install
-endif
-ifeq (@(LENGTH),y)
-: busybox |> !ln |> length
-endif
-ifeq (@(LN),y)
-: busybox |> !ln |> ln
-endif
-ifeq (@(LOGNAME),y)
-: busybox |> !ln |> logname
-endif
-ifeq (@(LS),y)
-: busybox |> !ln |> ls
-endif
-ifeq (@(MD5SUM),y)
-: busybox |> !ln |> md5sum
-endif
-ifeq (@(MKDIR),y)
-: busybox |> !ln |> mkdir
-endif
-ifeq (@(MKFIFO),y)
-: busybox |> !ln |> mkfifo
-endif
-ifeq (@(MKNOD),y)
-: busybox |> !ln |> mknod
-endif
-ifeq (@(MV),y)
-: busybox |> !ln |> mv
-endif
-ifeq (@(NICE),y)
-: busybox |> !ln |> nice
-endif
-ifeq (@(NOHUP),y)
-: busybox |> !ln |> nohup
-endif
-ifeq (@(OD),y)
-: busybox |> !ln |> od
-endif
-ifeq (@(PRINTENV),y)
-: busybox |> !ln |> printenv
-endif
-ifeq (@(PRINTF),y)
-: busybox |> !ln |> printf
-endif
-ifeq (@(PWD),y)
-: busybox |> !ln |> pwd
-endif
-ifeq (@(READLINK),y)
-: busybox |> !ln |> readlink
-endif
-ifeq (@(REALPATH),y)
-: busybox |> !ln |> realpath
-endif
-ifeq (@(RM),y)
-: busybox |> !ln |> rm
-endif
-ifeq (@(RMDIR),y)
-: busybox |> !ln |> rmdir
-endif
-ifeq (@(SEQ),y)
-: busybox |> !ln |> seq
-endif
-ifeq (@(SHA1SUM),y)
-: busybox |> !ln |> sha1sum
-endif
-ifeq (@(SHA256SUM),y)
-: busybox |> !ln |> sha256sum
-endif
-ifeq (@(SHA512SUM),y)
-: busybox |> !ln |> sha512sum
-endif
-ifeq (@(SLEEP),y)
-: busybox |> !ln |> sleep
-endif
-ifeq (@(SORT),y)
-: busybox |> !ln |> sort
-endif
-ifeq (@(SPLIT),y)
-: busybox |> !ln |> split
-endif
-ifeq (@(STAT),y)
-: busybox |> !ln |> stat
-endif
-ifeq (@(STTY),y)
-: busybox |> !ln |> stty
-endif
-ifeq (@(SUM),y)
-: busybox |> !ln |> sum
-endif
-ifeq (@(SYNC),y)
-: busybox |> !ln |> sync
-endif
-ifeq (@(TAC),y)
-: busybox |> !ln |> tac
-endif
-ifeq (@(TAIL),y)
-: busybox |> !ln |> tail
-endif
-ifeq (@(TEE),y)
-: busybox |> !ln |> tee
-endif
-ifeq (@(TEST),y)
-: busybox |> !ln |> test
-endif
-ifeq (@(TOUCH),y)
-: busybox |> !ln |> touch
-endif
-ifeq (@(TR),y)
-: busybox |> !ln |> tr
-endif
-ifeq (@(TRUE),y)
-: busybox |> !ln |> true
-endif
-ifeq (@(TTY),y)
-: busybox |> !ln |> tty
-endif
-ifeq (@(UNAME),y)
-: busybox |> !ln |> uname
-endif
-ifeq (@(UNEXPAND),y)
-: busybox |> !ln |> unexpand
-endif
-ifeq (@(UNIQ),y)
-: busybox |> !ln |> uniq
-endif
-ifeq (@(USLEEP),y)
-: busybox |> !ln |> usleep
-endif
-ifeq (@(UUDECODE),y)
-: busybox |> !ln |> uudecode
-endif
-ifeq (@(UUENCODE),y)
-: busybox |> !ln |> uuencode
-endif
-ifeq (@(WC),y)
-: busybox |> !ln |> wc
-endif
-ifeq (@(WHO),y)
-: busybox |> !ln |> who
-endif
-ifeq (@(WHOAMI),y)
-: busybox |> !ln |> whoami
-endif
-ifeq (@(YES),y)
-: busybox |> !ln |> yes
-endif
-ifeq (@(MKTEMP),y)
-: busybox |> !ln |> mktemp
-endif
-ifeq (@(PIPE_PROGRESS),y)
-: busybox |> !ln |> pipe_progress
-endif
-ifeq (@(RUN_PARTS),y)
-: busybox |> !ln |> run_parts
-endif
-ifeq (@(START_STOP_DAEMON),y)
-: busybox |> !ln |> start_stop_daemon
-endif
-ifeq (@(WHICH),y)
-: busybox |> !ln |> which
-endif
-ifeq (@(CHATTR),y)
-: busybox |> !ln |> chattr
-endif
-ifeq (@(FSCK),y)
-: busybox |> !ln |> fsck
-endif
-ifeq (@(LSATTR),y)
-: busybox |> !ln |> lsattr
-endif
-ifeq (@(CHATTR),y)
-: busybox |> !ln |> chattr
-endif
-ifeq (@(E2FSCK),y)
-: busybox |> !ln |> e2fsck
-endif
-ifeq (@(FSCK),y)
-: busybox |> !ln |> fsck
-endif
-ifeq (@(LSATTR),y)
-: busybox |> !ln |> lsattr
-endif
-ifeq (@(MKE2FS),y)
-: busybox |> !ln |> mke2fs
-endif
-ifeq (@(TUNE2FS),y)
-: busybox |> !ln |> tune2fs
-endif
-ifeq (@(E2LABEL),y)
-: busybox |> !ln |> e2label
-endif
-ifeq (@(FINDFS),y)
-: busybox |> !ln |> findfs
-endif
-ifeq (@(AWK),y)
-: busybox |> !ln |> awk
-endif
-ifeq (@(CMP),y)
-: busybox |> !ln |> cmp
-endif
-ifeq (@(DIFF),y)
-: busybox |> !ln |> diff
-endif
-ifeq (@(ED),y)
-: busybox |> !ln |> ed
-endif
-ifeq (@(PATCH),y)
-: busybox |> !ln |> patch
-endif
-ifeq (@(SED),y)
-: busybox |> !ln |> sed
-endif
-ifeq (@(VI),y)
-: busybox |> !ln |> vi
-endif
-ifeq (@(FIND),y)
-: busybox |> !ln |> find
-endif
-ifeq (@(GREP),y)
-: busybox |> !ln |> grep
-endif
-ifeq (@(XARGS),y)
-: busybox |> !ln |> xargs
-endif
-ifeq (@(INIT),y)
-: busybox |> !ln |> init
-endif
-ifeq (@(HALT),y)
-: busybox |> !ln |> halt
-endif
-ifeq (@(HALT),y)
-: busybox |> !ln |> reboot
-endif
-ifeq (@(HALT),y)
-: busybox |> !ln |> shutdown
-endif
-ifeq (@(MESG),y)
-: busybox |> !ln |> mesg
-endif
-ifeq (@(ADDGROUP),y)
-: busybox |> !ln |> addgroup
-endif
-ifeq (@(DELGROUP),y)
-: busybox |> !ln |> delgroup
-endif
-ifeq (@(ADDUSER),y)
-: busybox |> !ln |> adduser
-endif
-ifeq (@(DELUSER),y)
-: busybox |> !ln |> deluser
-endif
-ifeq (@(GETTY),y)
-: busybox |> !ln |> getty
-endif
-ifeq (@(LOGIN),y)
-: busybox |> !ln |> login
-endif
-ifeq (@(PAM),y)
-: busybox |> !ln |> pam
-endif
-ifeq (@(PASSWD),y)
-: busybox |> !ln |> passwd
-endif
-ifeq (@(CRYPTPW),y)
-: busybox |> !ln |> cryptpw
-endif
-ifeq (@(CHPASSWD),y)
-: busybox |> !ln |> chpasswd
-endif
-ifeq (@(SU),y)
-: busybox |> !ln |> su
-endif
-ifeq (@(SULOGIN),y)
-: busybox |> !ln |> sulogin
-endif
-ifeq (@(VLOCK),y)
-: busybox |> !ln |> vlock
-endif
-ifeq (@(MAKEMIME),y)
-: busybox |> !ln |> makemime
-endif
-ifeq (@(POPMAILDIR),y)
-: busybox |> !ln |> popmaildir
-endif
-ifeq (@(REFORMIME),y)
-: busybox |> !ln |> reformime
-endif
-ifeq (@(SENDMAIL),y)
-: busybox |> !ln |> sendmail
-endif
-ifeq (@(ADJTIMEX),y)
-: busybox |> !ln |> adjtimex
-endif
-ifeq (@(BBCONFIG),y)
-: busybox |> !ln |> bbconfig
-endif
-ifeq (@(BEEP),y)
-: busybox |> !ln |> beep
-endif
-ifeq (@(CHAT),y)
-: busybox |> !ln |> chat
-endif
-ifeq (@(CHRT),y)
-: busybox |> !ln |> chrt
-endif
-ifeq (@(CROND),y)
-: busybox |> !ln |> crond
-endif
-ifeq (@(CRONTAB),y)
-: busybox |> !ln |> crontab
-endif
-ifeq (@(DC),y)
-: busybox |> !ln |> dc
-endif
-ifeq (@(DEVFSD),y)
-: busybox |> !ln |> devfsd
-endif
-ifeq (@(DEVMEM),y)
-: busybox |> !ln |> devmem
-endif
-ifeq (@(EJECT),y)
-: busybox |> !ln |> eject
-endif
-ifeq (@(FBSPLASH),y)
-: busybox |> !ln |> fbsplash
-endif
-ifeq (@(FLASH_LOCK),y)
-: busybox |> !ln |> flash_lock
-endif
-ifeq (@(FLASH_UNLOCK),y)
-: busybox |> !ln |> flash_unlock
-endif
-ifeq (@(FLASH_ERASEALL),y)
-: busybox |> !ln |> flash_eraseall
-endif
-ifeq (@(IONICE),y)
-: busybox |> !ln |> ionice
-endif
-ifeq (@(INOTIFYD),y)
-: busybox |> !ln |> inotifyd
-endif
-ifeq (@(LAST),y)
-: busybox |> !ln |> last
-endif
-ifeq (@(LESS),y)
-: busybox |> !ln |> less
-endif
-ifeq (@(HDPARM),y)
-: busybox |> !ln |> hdparm
-endif
-ifeq (@(MAKEDEVS),y)
-: busybox |> !ln |> makedevs
-endif
-ifeq (@(MAN),y)
-: busybox |> !ln |> man
-endif
-ifeq (@(MICROCOM),y)
-: busybox |> !ln |> microcom
-endif
-ifeq (@(MOUNTPOINT),y)
-: busybox |> !ln |> mountpoint
-endif
-ifeq (@(MT),y)
-: busybox |> !ln |> mt
-endif
-ifeq (@(RAIDAUTORUN),y)
-: busybox |> !ln |> raidautorun
-endif
-ifeq (@(READAHEAD),y)
-: busybox |> !ln |> readahead
-endif
-ifeq (@(RUNLEVEL),y)
-: busybox |> !ln |> runlevel
-endif
-ifeq (@(RX),y)
-: busybox |> !ln |> rx
-endif
-ifeq (@(SETSID),y)
-: busybox |> !ln |> setsid
-endif
-ifeq (@(STRINGS),y)
-: busybox |> !ln |> strings
-endif
-ifeq (@(TASKSET),y)
-: busybox |> !ln |> taskset
-endif
-ifeq (@(TIME),y)
-: busybox |> !ln |> time
-endif
-ifeq (@(TIMEOUT),y)
-: busybox |> !ln |> timeout
-endif
-ifeq (@(TTYSIZE),y)
-: busybox |> !ln |> ttysize
-endif
-ifeq (@(VOLNAME),y)
-: busybox |> !ln |> volname
-endif
-ifeq (@(WATCHDOG),y)
-: busybox |> !ln |> watchdog
-endif
-ifeq (@(MODPROBE_SMALL),y)
-: busybox |> !ln |> modprobe_small
-endif
-ifeq (@(INSMOD),y)
-: busybox |> !ln |> insmod
-endif
-ifeq (@(RMMOD),y)
-: busybox |> !ln |> rmmod
-endif
-ifeq (@(LSMOD),y)
-: busybox |> !ln |> lsmod
-endif
-ifeq (@(MODPROBE),y)
-: busybox |> !ln |> modprobe
-endif
-ifeq (@(DEPMOD),y)
-: busybox |> !ln |> depmod
-endif
-ifeq (@(ARP),y)
-: busybox |> !ln |> arp
-endif
-ifeq (@(ARPING),y)
-: busybox |> !ln |> arping
-endif
-ifeq (@(BRCTL),y)
-: busybox |> !ln |> brctl
-endif
-ifeq (@(DNSD),y)
-: busybox |> !ln |> dnsd
-endif
-ifeq (@(ETHER_WAKE),y)
-: busybox |> !ln |> ether_wake
-endif
-ifeq (@(FAKEIDENTD),y)
-: busybox |> !ln |> fakeidentd
-endif
-ifeq (@(FTPD),y)
-: busybox |> !ln |> ftpd
-endif
-ifeq (@(FTPGET),y)
-: busybox |> !ln |> ftpget
-endif
-ifeq (@(FTPPUT),y)
-: busybox |> !ln |> ftpput
-endif
-ifeq (@(HOSTNAME),y)
-: busybox |> !ln |> hostname
-endif
-ifeq (@(HTTPD),y)
-: busybox |> !ln |> httpd
-endif
-ifeq (@(IFCONFIG),y)
-: busybox |> !ln |> ifconfig
-endif
-ifeq (@(IFENSLAVE),y)
-: busybox |> !ln |> ifenslave
-endif
-ifeq (@(IFPLUGD),y)
-: busybox |> !ln |> ifplugd
-endif
-ifeq (@(IFUPDOWN),y)
-: busybox |> !ln |> ifupdown
-endif
-ifeq (@(INETD),y)
-: busybox |> !ln |> inetd
-endif
-ifeq (@(IP),y)
-: busybox |> !ln |> ip
-endif
-ifeq (@(IPADDR),y)
-: busybox |> !ln |> ipaddr
-endif
-ifeq (@(IPLINK),y)
-: busybox |> !ln |> iplink
-endif
-ifeq (@(IPROUTE),y)
-: busybox |> !ln |> iproute
-endif
-ifeq (@(IPTUNNEL),y)
-: busybox |> !ln |> iptunnel
-endif
-ifeq (@(IPRULE),y)
-: busybox |> !ln |> iprule
-endif
-ifeq (@(IPCALC),y)
-: busybox |> !ln |> ipcalc
-endif
-ifeq (@(NAMEIF),y)
-: busybox |> !ln |> nameif
-endif
-ifeq (@(NC),y)
-: busybox |> !ln |> nc
-endif
-ifeq (@(NETSTAT),y)
-: busybox |> !ln |> netstat
-endif
-ifeq (@(NSLOOKUP),y)
-: busybox |> !ln |> nslookup
-endif
-ifeq (@(PING),y)
-: busybox |> !ln |> ping
-endif
-ifeq (@(PING6),y)
-: busybox |> !ln |> ping6
-endif
-ifeq (@(PSCAN),y)
-: busybox |> !ln |> pscan
-endif
-ifeq (@(ROUTE),y)
-: busybox |> !ln |> route
-endif
-ifeq (@(SLATTACH),y)
-: busybox |> !ln |> slattach
-endif
-ifeq (@(TELNET),y)
-: busybox |> !ln |> telnet
-endif
-ifeq (@(TELNETD),y)
-: busybox |> !ln |> telnetd
-endif
-ifeq (@(TFTP),y)
-: busybox |> !ln |> tftp
-endif
-ifeq (@(TFTPD),y)
-: busybox |> !ln |> tftpd
-endif
-ifeq (@(TRACEROUTE),y)
-: busybox |> !ln |> traceroute
-endif
-ifeq (@(VCONFIG),y)
-: busybox |> !ln |> vconfig
-endif
-ifeq (@(WGET),y)
-: busybox |> !ln |> wget
-endif
-ifeq (@(ZCIP),y)
-: busybox |> !ln |> zcip
-endif
-ifeq (@(TCPSVD),y)
-: busybox |> !ln |> tcpsvd
-endif
-ifeq (@(TUNCTL),y)
-: busybox |> !ln |> tunctl
-endif
-ifeq (@(UDPSVD),y)
-: busybox |> !ln |> udpsvd
-endif
-ifeq (@(LPD),y)
-: busybox |> !ln |> lpd
-endif
-ifeq (@(LPR),y)
-: busybox |> !ln |> lpr
-endif
-ifeq (@(LPQ),y)
-: busybox |> !ln |> lpq
-endif
-ifeq (@(FREE),y)
-: busybox |> !ln |> free
-endif
-ifeq (@(FUSER),y)
-: busybox |> !ln |> fuser
-endif
-ifeq (@(KILL),y)
-: busybox |> !ln |> kill
-endif
-ifeq (@(KILLALL),y)
-: busybox |> !ln |> killall
-endif
-ifeq (@(KILLALL5),y)
-: busybox |> !ln |> killall5
-endif
-ifeq (@(NMETER),y)
-: busybox |> !ln |> nmeter
-endif
-ifeq (@(PGREP),y)
-: busybox |> !ln |> pgrep
-endif
-ifeq (@(PIDOF),y)
-: busybox |> !ln |> pidof
-endif
-ifeq (@(PKILL),y)
-: busybox |> !ln |> pkill
-endif
-ifeq (@(PS),y)
-: busybox |> !ln |> ps
-endif
-ifeq (@(RENICE),y)
-: busybox |> !ln |> renice
-endif
-ifeq (@(TOP),y)
-: busybox |> !ln |> top
-endif
-ifeq (@(UPTIME),y)
-: busybox |> !ln |> uptime
-endif
-ifeq (@(WATCH),y)
-: busybox |> !ln |> watch
-endif
-ifeq (@(RUNSV),y)
-: busybox |> !ln |> runsv
-endif
-ifeq (@(RUNSVDIR),y)
-: busybox |> !ln |> runsvdir
-endif
-ifeq (@(SV),y)
-: busybox |> !ln |> sv
-endif
-ifeq (@(SVLOGD),y)
-: busybox |> !ln |> svlogd
-endif
-ifeq (@(CHPST),y)
-: busybox |> !ln |> chpst
-endif
-ifeq (@(SETUIDGID),y)
-: busybox |> !ln |> setuidgid
-endif
-ifeq (@(ENVUIDGID),y)
-: busybox |> !ln |> envuidgid
-endif
-ifeq (@(ENVDIR),y)
-: busybox |> !ln |> envdir
-endif
-ifeq (@(SOFTLIMIT),y)
-: busybox |> !ln |> softlimit
-endif
-ifeq (@(ASH),y)
-: busybox |> !ln |> ash
-endif
-ifeq (@(HUSH),y)
-: busybox |> !ln |> hush
-endif
-ifeq (@(FEATURE_SH_IS_ASH),y)
-: busybox |> !ln |> sh
-endif
-ifeq (@(FEATURE_SH_IS_HUSH),y)
-: busybox |> !ln |> sh
-endif
-ifeq (@(LASH),y)
-: busybox |> !ln |> lash
-endif
-ifeq (@(MSH),y)
-: busybox |> !ln |> msh
-endif
-ifeq (@(CTTYHACK),y)
-: busybox |> !ln |> cttyhack
-endif
-ifeq (@(SYSLOGD),y)
-: busybox |> !ln |> syslogd
-endif
-ifeq (@(LOGREAD),y)
-: busybox |> !ln |> logread
-endif
-ifeq (@(KLOGD),y)
-: busybox |> !ln |> klogd
-endif
-ifeq (@(LOGGER),y)
-: busybox |> !ln |> logger
-endif
-ifeq (@(ACPID),y)
-: busybox |> !ln |> acpid
-endif
-ifeq (@(BLKID),y)
-: busybox |> !ln |> blkid
-endif
-ifeq (@(DMESG),y)
-: busybox |> !ln |> dmesg
-endif
-ifeq (@(FBSET),y)
-: busybox |> !ln |> fbset
-endif
-ifeq (@(FDFLUSH),y)
-: busybox |> !ln |> fdflush
-endif
-ifeq (@(FDFORMAT),y)
-: busybox |> !ln |> fdformat
-endif
-ifeq (@(FDISK),y)
-: busybox |> !ln |> fdisk
-endif
-ifeq (@(FINDFS),y)
-: busybox |> !ln |> findfs
-endif
-ifeq (@(FREERAMDISK),y)
-: busybox |> !ln |> freeramdisk
-endif
-ifeq (@(GETOPT),y)
-: busybox |> !ln |> getopt
-endif
-ifeq (@(HEXDUMP),y)
-: busybox |> !ln |> hexdump
-endif
-ifeq (@(HD),y)
-: busybox |> !ln |> hd
-endif
-ifeq (@(HWCLOCK),y)
-: busybox |> !ln |> hwclock
-endif
-ifeq (@(IPCRM),y)
-: busybox |> !ln |> ipcrm
-endif
-ifeq (@(IPCS),y)
-: busybox |> !ln |> ipcs
-endif
-ifeq (@(LOSETUP),y)
-: busybox |> !ln |> losetup
-endif
-ifeq (@(MDEV),y)
-: busybox |> !ln |> mdev
-endif
-ifeq (@(MKSWAP),y)
-: busybox |> !ln |> mkswap
-endif
-ifeq (@(MORE),y)
-: busybox |> !ln |> more
-endif
-ifeq (@(VOLUMEID),y)
-: busybox |> !ln |> volumeid
-endif
-ifeq (@(MOUNT),y)
-: busybox |> !ln |> mount
-endif
-ifeq (@(PIVOT_ROOT),y)
-: busybox |> !ln |> pivot_root
-endif
-ifeq (@(RDATE),y)
-: busybox |> !ln |> rdate
-endif
-ifeq (@(RDEV),y)
-: busybox |> !ln |> rdev
-endif
-ifeq (@(READPROFILE),y)
-: busybox |> !ln |> readprofile
-endif
-ifeq (@(RTCWAKE),y)
-: busybox |> !ln |> rtcwake
-endif
-ifeq (@(SCRIPT),y)
-: busybox |> !ln |> script
-endif
-ifeq (@(SCRIPTREPLAY),y)
-: busybox |> !ln |> scriptreplay
-endif
-ifeq (@(SETARCH),y)
-: busybox |> !ln |> setarch
-endif
-ifeq (@(SWAPONOFF),y)
-: busybox |> !ln |> swaponoff
-endif
-ifeq (@(SWITCH_ROOT),y)
-: busybox |> !ln |> switch_root
-endif
-ifeq (@(UMOUNT),y)
-: busybox |> !ln |> umount
-endif
+: foreach $(link-y) <| !ln <| busybox

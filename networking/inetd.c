@@ -295,7 +295,7 @@ struct globals {
 	struct rlimit rlim_ofile;
 	servtab_t *serv_list;
 	int global_queuelen;
-	int maxsock;		/* max fd# in allsock, -1: unknown */
+	int maxsock;         /* max fd# in allsock, -1: unknown */
 	/* whenever maxsock grows, prev_maxsock is set to new maxsock,
 	 * but if maxsock is set to -1, prev_maxsock is not changed */
 	int prev_maxsock;
@@ -313,7 +313,7 @@ struct globals {
 	fd_set allsock;
 	/* Used in next_line(), and as scratch read buffer */
 	char line[256];          /* _at least_ 256, see LINE_SIZE */
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 enum { LINE_SIZE = COMMON_BUFSIZE - offsetof(struct globals, line) };
 struct BUG_G_too_big {
@@ -1031,10 +1031,10 @@ static void reap_child(int sig UNUSED_PARAM)
 				continue;
 			/* One of our "wait" services */
 			if (WIFEXITED(status) && WEXITSTATUS(status))
-				bb_error_msg("%s: exit status 0x%x",
+				bb_error_msg("%s: exit status %u",
 						sep->se_program, WEXITSTATUS(status));
 			else if (WIFSIGNALED(status))
-				bb_error_msg("%s: exit signal 0x%x",
+				bb_error_msg("%s: exit signal %u",
 						sep->se_program, WTERMSIG(status));
 			sep->se_wait = 1;
 			add_fd_to_set(sep->se_fd);
@@ -1119,7 +1119,12 @@ int inetd_main(int argc UNUSED_PARAM, char **argv)
 	else
 		bb_sanitize_stdio();
 	if (!(opt & 4)) {
-		openlog(applet_name, LOG_PID, LOG_DAEMON);
+		/* LOG_NDELAY: connect to syslog daemon NOW.
+		 * Otherwise, we may open syslog socket
+		 * in vforked child, making opened fds and syslog()
+		 * internal state inconsistent.
+		 * This was observed to leak file descriptors. */
+		openlog(applet_name, LOG_PID | LOG_NDELAY, LOG_DAEMON);
 		logmode = LOGMODE_SYSLOG;
 	}
 
@@ -1266,7 +1271,7 @@ int inetd_main(int argc UNUSED_PARAM, char **argv)
 					pid = vfork();
 
 				if (pid < 0) { /* fork error */
-					bb_perror_msg("fork");
+					bb_perror_msg("vfork"+1);
 					sleep(1);
 					restore_sigmask(&omask);
 					maybe_close(accepted_fd);
@@ -1355,21 +1360,27 @@ int inetd_main(int argc UNUSED_PARAM, char **argv)
 			if (rlim_ofile.rlim_cur != rlim_ofile_cur)
 				if (setrlimit(RLIMIT_NOFILE, &rlim_ofile) < 0)
 					bb_perror_msg("setrlimit");
-			closelog();
+
+			/* closelog(); - WRONG. we are after vfork,
+			 * this may confuse syslog() internal state.
+			 * Let's hope libc sets syslog fd to CLOEXEC...
+			 */
 			xmove_fd(ctrl, STDIN_FILENO);
 			xdup2(STDIN_FILENO, STDOUT_FILENO);
 			/* manpages of inetd I managed to find either say
 			 * that stderr is also redirected to the network,
 			 * or do not talk about redirection at all (!) */
-			xdup2(STDIN_FILENO, STDERR_FILENO);
-			/* NB: among others, this loop closes listening socket
+			if (!sep->se_wait) /* only for usual "tcp nowait" */
+				xdup2(STDIN_FILENO, STDERR_FILENO);
+			/* NB: among others, this loop closes listening sockets
 			 * for nowait stream children */
 			for (sep2 = serv_list; sep2; sep2 = sep2->se_next)
-				maybe_close(sep2->se_fd);
+				if (sep2->se_fd != ctrl)
+					maybe_close(sep2->se_fd);
 			sigaction_set(SIGPIPE, &saved_pipe_handler);
 			restore_sigmask(&omask);
 			BB_EXECVP(sep->se_program, sep->se_argv);
-			bb_perror_msg("exec %s", sep->se_program);
+			bb_perror_msg("can't execute '%s'", sep->se_program);
  do_exit1:
 			/* eat packet in udp case */
 			if (sep->se_socktype != SOCK_STREAM)
@@ -1464,9 +1475,8 @@ static void init_ring(void)
 	int i;
 
 	end_ring = ring;
-	for (i = 0; i <= 128; ++i)
-		if (isprint(i))
-			*end_ring++ = i;
+	for (i = ' '; i < 127; i++)
+		*end_ring++ = i;
 }
 /* Character generator. MMU arches only. */
 /* ARGSUSED */

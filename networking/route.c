@@ -10,7 +10,7 @@
  *              Fred N. van Kempen, <waltje@uwalt.nl.mugnet.org>
  *              (derived from FvK's 'route.c     1.70    01/04/94')
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
  *
  * displayroute() code added by Vladimir N. Oleynik <dzo@simtreas.ru>
@@ -151,7 +151,7 @@ static int kw_lookup(const char *kwtbl, char ***pargs)
 
 /* Add or delete a route, depending on action. */
 
-static void INET_setroute(int action, char **args)
+static NOINLINE void INET_setroute(int action, char **args)
 {
 	struct rtentry rt;
 	const char *netmask = NULL;
@@ -178,14 +178,14 @@ static void INET_setroute(int action, char **args)
 			int prefix_len;
 
 			prefix_len = xatoul_range(prefix+1, 0, 32);
-			mask_in_addr(rt) = htonl( ~ (0xffffffffUL >> prefix_len));
+			mask_in_addr(rt) = htonl( ~(0xffffffffUL >> prefix_len));
 			*prefix = '\0';
 #if HAVE_NEW_ADDRT
 			rt.rt_genmask.sa_family = AF_INET;
 #endif
 		} else {
 			/* Default netmask. */
-			netmask = bb_str_default;
+			netmask = "default";
 		}
 		/* Prefer hostname lookup is -host flag (xflag==1) was given. */
 		isnet = INET_resolve(target, (struct sockaddr_in *) &rt.rt_dst,
@@ -336,7 +336,7 @@ static void INET_setroute(int action, char **args)
 
 #if ENABLE_FEATURE_IPV6
 
-static void INET6_setroute(int action, char **args)
+static NOINLINE void INET6_setroute(int action, char **args)
 {
 	struct sockaddr_in6 sa6;
 	struct in6_rtmsg rt;
@@ -346,7 +346,7 @@ static void INET6_setroute(int action, char **args)
 		/* We know args isn't NULL from the check in route_main. */
 		const char *target = *args++;
 
-		if (strcmp(target, bb_str_default) == 0) {
+		if (strcmp(target, "default") == 0) {
 			prefix_len = 0;
 			memset(&sa6, 0, sizeof(sa6));
 		} else {

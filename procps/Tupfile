@@ -1,5 +1,10 @@
 include_rules
 
+lib-@(IOSTAT) += iostat.c
+lib-@(MPSTAT) += mpstat.c
+lib-@(PMAP)     += pmap.c
+lib-@(POWERTOP) += powertop.c
+lib-@(SMEMCAP) += smemcap.c
 lib-@(FREE)	+= free.c
 lib-@(FUSER)	+= fuser.c
 lib-@(KILL)	+= kill.c

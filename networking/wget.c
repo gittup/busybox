@@ -3,8 +3,10 @@
  * wget - retrieve a file using HTTP or FTP
  *
  * Chip Rosenthal Covad Communications <chip@laserlink.net>
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Copyright (C) 2010 Bradley M. Kuhn <bkuhn@ebb.org>
+ * Kuhn's copyrights are licensed GPLv2-or-later.  File as a whole remains GPLv2.
  */
 #include "libbb.h"
 
@@ -19,177 +21,70 @@ struct host_info {
 };
 
 
-/* Globals (can be accessed from signal handlers) */
+/* Globals */
 struct globals {
 	off_t content_len;        /* Content-length of the file */
 	off_t beg_range;          /* Range at which continue begins */
 #if ENABLE_FEATURE_WGET_STATUSBAR
-	off_t lastsize;
-	off_t totalsize;
 	off_t transferred;        /* Number of bytes transferred so far */
 	const char *curfile;      /* Name of current file being transferred */
-	unsigned lastupdate_sec;
-	unsigned start_sec;
+	bb_progress_t pmt;
+#endif
+#if ENABLE_FEATURE_WGET_TIMEOUT
+	unsigned timeout_seconds;
 #endif
 	smallint chunked;         /* chunked transfer encoding */
 	smallint got_clen;        /* got content-length: from server  */
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 struct BUG_G_too_big {
 	char BUG_G_too_big[sizeof(G) <= COMMON_BUFSIZE ? 1 : -1];
 };
-#define content_len     (G.content_len    )
-#define beg_range       (G.beg_range      )
-#define lastsize        (G.lastsize       )
-#define totalsize       (G.totalsize      )
-#define transferred     (G.transferred    )
-#define curfile         (G.curfile        )
-#define lastupdate_sec  (G.lastupdate_sec )
-#define start_sec       (G.start_sec      )
-#define INIT_G() do { } while (0)
+#define INIT_G() do { \
+	IF_FEATURE_WGET_TIMEOUT(G.timeout_seconds = 900;) \
+} while (0)
 
 
-#if ENABLE_FEATURE_WGET_STATUSBAR
+/* Must match option string! */
 enum {
-	STALLTIME = 5                   /* Seconds when xfer considered "stalled" */
+	WGET_OPT_CONTINUE   = (1 << 0),
+	WGET_OPT_SPIDER     = (1 << 1),
+	WGET_OPT_QUIET      = (1 << 2),
+	WGET_OPT_OUTNAME    = (1 << 3),
+	WGET_OPT_PREFIX     = (1 << 4),
+	WGET_OPT_PROXY      = (1 << 5),
+	WGET_OPT_USER_AGENT = (1 << 6),
+	WGET_OPT_NETWORK_READ_TIMEOUT = (1 << 7),
+	WGET_OPT_RETRIES    = (1 << 8),
+	WGET_OPT_PASSIVE    = (1 << 9),
+	WGET_OPT_HEADER     = (1 << 10) * ENABLE_FEATURE_WGET_LONG_OPTIONS,
+	WGET_OPT_POST_DATA  = (1 << 11) * ENABLE_FEATURE_WGET_LONG_OPTIONS,
 };
 
-static unsigned int get_tty2_width(void)
-{
-	unsigned width;
-	get_terminal_width_height(2, &width, NULL);
-	return width;
-}
-
+enum {
+	PROGRESS_START = -1,
+	PROGRESS_END   = 0,
+	PROGRESS_BUMP  = 1,
+};
+#if ENABLE_FEATURE_WGET_STATUSBAR
 static void progress_meter(int flag)
 {
-	/* We can be called from signal handler */
-	int save_errno = errno;
-	off_t abbrevsize;
-	unsigned since_last_update, elapsed;
-	unsigned ratio;
-	int barlength, i;
+	if (option_mask32 & WGET_OPT_QUIET)
+		return;
 
-	if (flag == -1) { /* first call to progress_meter */
-		start_sec = monotonic_sec();
-		lastupdate_sec = start_sec;
-		lastsize = 0;
-		totalsize = content_len + beg_range; /* as content_len changes.. */
+	if (flag == PROGRESS_START)
+		bb_progress_init(&G.pmt);
+
+	bb_progress_update(&G.pmt, G.curfile, G.beg_range, G.transferred,
+			   G.chunked ? 0 : G.beg_range + G.transferred + G.content_len);
+
+	if (flag == PROGRESS_END) {
+		bb_putchar_stderr('\n');
+		G.transferred = 0;
 	}
-
-	ratio = 100;
-	if (totalsize != 0 && !G.chunked) {
-		/* long long helps to have it working even if !LFS */
-		ratio = (unsigned) (100ULL * (transferred+beg_range) / totalsize);
-		if (ratio > 100) ratio = 100;
-	}
-
-	fprintf(stderr, "\r%-20.20s%4d%% ", curfile, ratio);
-
-	barlength = get_tty2_width() - 49;
-	if (barlength > 0) {
-		/* god bless gcc for variable arrays :) */
-		i = barlength * ratio / 100;
-		{
-			char buf[i+1];
-			memset(buf, '*', i);
-			buf[i] = '\0';
-			fprintf(stderr, "|%s%*s|", buf, barlength - i, "");
-		}
-	}
-	i = 0;
-	abbrevsize = transferred + beg_range;
-	while (abbrevsize >= 100000) {
-		i++;
-		abbrevsize >>= 10;
-	}
-	/* see http://en.wikipedia.org/wiki/Tera */
-	fprintf(stderr, "%6d%c ", (int)abbrevsize, " kMGTPEZY"[i]);
-
-// Nuts! Ain't it easier to update progress meter ONLY when we transferred++?
-
-	elapsed = monotonic_sec();
-	since_last_update = elapsed - lastupdate_sec;
-	if (transferred > lastsize) {
-		lastupdate_sec = elapsed;
-		lastsize = transferred;
-		if (since_last_update >= STALLTIME) {
-			/* We "cut off" these seconds from elapsed time
-			 * by adjusting start time */
-			start_sec += since_last_update;
-		}
-		since_last_update = 0; /* we are un-stalled now */
-	}
-	elapsed -= start_sec; /* now it's "elapsed since start" */
-
-	if (since_last_update >= STALLTIME) {
-		fprintf(stderr, " - stalled -");
-	} else {
-		off_t to_download = totalsize - beg_range;
-		if (transferred <= 0 || (int)elapsed <= 0 || transferred > to_download || G.chunked) {
-			fprintf(stderr, "--:--:-- ETA");
-		} else {
-			/* to_download / (transferred/elapsed) - elapsed: */
-			int eta = (int) ((unsigned long long)to_download*elapsed/transferred - elapsed);
-			/* (long long helps to have working ETA even if !LFS) */
-			i = eta % 3600;
-			fprintf(stderr, "%02d:%02d:%02d ETA", eta / 3600, i / 60, i % 60);
-		}
-	}
-
-	if (flag == 0) {
-		/* last call to progress_meter */
-		alarm(0);
-		transferred = 0;
-		fputc('\n', stderr);
-	} else {
-		if (flag == -1) { /* first call to progress_meter */
-			signal_SA_RESTART_empty_mask(SIGALRM, progress_meter);
-		}
-		alarm(1);
-	}
-
-	errno = save_errno;
 }
-/* Original copyright notice which applies to the CONFIG_FEATURE_WGET_STATUSBAR stuff,
- * much of which was blatantly stolen from openssh.  */
-/*-
- * Copyright (c) 1992, 1993
- *	The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * 3. <BSD Advertising Clause omitted per the July 22, 1999 licensing change
- *		ftp://ftp.cs.berkeley.edu/pub/4bsd/README.Impt.License.Change>
- *
- * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- */
-#else /* FEATURE_WGET_STATUSBAR */
-
+#else
 static ALWAYS_INLINE void progress_meter(int flag UNUSED_PARAM) { }
-
 #endif
 
 
@@ -318,7 +213,7 @@ static int ftpcmd(const char *s1, const char *s2, FILE *fp, char *buf)
 	} while (!isdigit(buf[0]) || buf[3] != ' ');
 
 	buf[3] = '\0';
-	result = xatoi_u(buf);
+	result = xatoi_positive(buf);
 	buf[3] = ' ';
 	return result;
 }
@@ -370,8 +265,10 @@ static void parse_url(char *src_url, struct host_info *h)
 		h->path = sp;
 	}
 
+	// We used to set h->user to NULL here, but this interferes
+	// with handling of code 302 ("object was moved")
+
 	sp = strrchr(h->host, '@');
-	h->user = NULL;
 	if (sp != NULL) {
 		h->user = h->host;
 		*sp = '\0';
@@ -399,8 +296,10 @@ static char *gethdr(char *buf, size_t bufsiz, FILE *fp /*, int *istrunc*/)
 		return NULL;
 
 	/* convert the header name to lower case */
-	for (s = buf; isalnum(*s) || *s == '-' || *s == '.'; ++s)
-		*s = tolower(*s);
+	for (s = buf; isalnum(*s) || *s == '-' || *s == '.'; ++s) {
+		/* tolower for "A-Z", no-op for "0-9a-z-." */
+		*s = (*s | 0x20);
+	}
 
 	/* verify we are at the end of the header name */
 	if (*s != ':')
@@ -503,8 +402,8 @@ static FILE* prepare_ftp_session(FILE **dfpp, struct host_info *target, len_and_
 	 * Querying file size
 	 */
 	if (ftpcmd("SIZE ", target->path, sfp, buf) == 213) {
-		content_len = BB_STRTOOFF(buf+4, NULL, 10);
-		if (errno || content_len < 0) {
+		G.content_len = BB_STRTOOFF(buf+4, NULL, 10);
+		if (G.content_len < 0 || errno) {
 			bb_error_msg_and_die("SIZE value is garbage");
 		}
 		G.got_clen = 1;
@@ -533,10 +432,10 @@ static FILE* prepare_ftp_session(FILE **dfpp, struct host_info *target, len_and_
 
 	*dfpp = open_socket(lsa);
 
-	if (beg_range) {
-		sprintf(buf, "REST %"OFF_FMT"d", beg_range);
+	if (G.beg_range) {
+		sprintf(buf, "REST %"OFF_FMT"u", G.beg_range);
 		if (ftpcmd(buf, NULL, sfp, buf) == 350)
-			content_len -= beg_range;
+			G.content_len -= G.beg_range;
 	}
 
 	if (ftpcmd("RETR ", target->path, sfp, buf) > 150)
@@ -545,40 +444,55 @@ static FILE* prepare_ftp_session(FILE **dfpp, struct host_info *target, len_and_
 	return sfp;
 }
 
-/* Must match option string! */
-enum {
-	WGET_OPT_CONTINUE   = (1 << 0),
-	WGET_OPT_SPIDER	    = (1 << 1),
-	WGET_OPT_QUIET      = (1 << 2),
-	WGET_OPT_OUTNAME    = (1 << 3),
-	WGET_OPT_PREFIX     = (1 << 4),
-	WGET_OPT_PROXY      = (1 << 5),
-	WGET_OPT_USER_AGENT = (1 << 6),
-	WGET_OPT_RETRIES    = (1 << 7),
-	WGET_OPT_NETWORK_READ_TIMEOUT = (1 << 8),
-	WGET_OPT_PASSIVE    = (1 << 9),
-	WGET_OPT_HEADER     = (1 << 10) * ENABLE_FEATURE_WGET_LONG_OPTIONS,
-	WGET_OPT_POST_DATA  = (1 << 11) * ENABLE_FEATURE_WGET_LONG_OPTIONS,
-};
-
 static void NOINLINE retrieve_file_data(FILE *dfp, int output_fd)
 {
 	char buf[512];
+#if ENABLE_FEATURE_WGET_STATUSBAR || ENABLE_FEATURE_WGET_TIMEOUT
+# if ENABLE_FEATURE_WGET_TIMEOUT
+	unsigned second_cnt;
+# endif
+	struct pollfd polldata;
 
-	if (!(option_mask32 & WGET_OPT_QUIET))
-		progress_meter(-1);
+	polldata.fd = fileno(dfp);
+	polldata.events = POLLIN | POLLPRI;
+	ndelay_on(polldata.fd);
+#endif
+	progress_meter(PROGRESS_START);
 
 	if (G.chunked)
 		goto get_clen;
 
 	/* Loops only if chunked */
 	while (1) {
-		while (content_len > 0 || !G.got_clen) {
+		while (1) {
 			int n;
-			unsigned rdsz = sizeof(buf);
+			unsigned rdsz;
 
-			if (content_len < sizeof(buf) && (G.chunked || G.got_clen))
-				rdsz = (unsigned)content_len;
+			rdsz = sizeof(buf);
+			if (G.got_clen) {
+				if (G.content_len < (off_t)sizeof(buf)) {
+					if ((int)G.content_len <= 0)
+						break;
+					rdsz = (unsigned)G.content_len;
+				}
+			}
+#if ENABLE_FEATURE_WGET_STATUSBAR || ENABLE_FEATURE_WGET_TIMEOUT
+# if ENABLE_FEATURE_WGET_TIMEOUT
+			second_cnt = G.timeout_seconds;
+# endif
+			while (1) {
+				if (safe_poll(&polldata, 1, 1000) != 0)
+					break; /* error, EOF, or data is available */
+# if ENABLE_FEATURE_WGET_TIMEOUT
+				if (second_cnt != 0 && --second_cnt == 0) {
+					progress_meter(PROGRESS_END);
+					bb_perror_msg_and_die("download timed out");
+				}
+# endif
+				/* Needed for "stalled" indicator */
+				progress_meter(PROGRESS_BUMP);
+			}
+#endif
 			n = safe_fread(buf, rdsz, dfp);
 			if (n <= 0) {
 				if (ferror(dfp)) {
@@ -589,10 +503,11 @@ static void NOINLINE retrieve_file_data(FILE *dfp, int output_fd)
 			}
 			xwrite(output_fd, buf, n);
 #if ENABLE_FEATURE_WGET_STATUSBAR
-			transferred += n;
+			G.transferred += n;
+			progress_meter(PROGRESS_BUMP);
 #endif
 			if (G.got_clen)
-				content_len -= n;
+				G.content_len -= n;
 		}
 
 		if (!G.chunked)
@@ -601,14 +516,14 @@ static void NOINLINE retrieve_file_data(FILE *dfp, int output_fd)
 		safe_fgets(buf, sizeof(buf), dfp); /* This is a newline */
  get_clen:
 		safe_fgets(buf, sizeof(buf), dfp);
-		content_len = STRTOOFF(buf, NULL, 16);
+		G.content_len = STRTOOFF(buf, NULL, 16);
 		/* FIXME: error check? */
-		if (content_len == 0)
+		if (G.content_len == 0)
 			break; /* all done! */
+		G.got_clen = 1;
 	}
 
-	if (!(option_mask32 & WGET_OPT_QUIET))
-		progress_meter(0);
+	progress_meter(PROGRESS_END);
 }
 
 int wget_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
@@ -649,13 +564,17 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 		"directory-prefix\0" Required_argument "P"
 		"proxy\0"            Required_argument "Y"
 		"user-agent\0"       Required_argument "U"
+#if ENABLE_FEATURE_WGET_TIMEOUT
+		"timeout\0"          Required_argument "T"
+#endif
 		/* Ignored: */
 		// "tries\0"            Required_argument "t"
-		// "timeout\0"          Required_argument "T"
 		/* Ignored (we always use PASV): */
 		"passive-ftp\0"      No_argument       "\xff"
 		"header\0"           Required_argument "\xfe"
 		"post-data\0"        Required_argument "\xfd"
+		/* Ignored (we don't do ssl) */
+		"no-check-certificate\0" No_argument   "\xfc"
 		;
 #endif
 
@@ -665,12 +584,12 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 	applet_long_options = wget_longopts;
 #endif
 	/* server.allocated = target.allocated = NULL; */
-	opt_complementary = "-1" IF_FEATURE_WGET_LONG_OPTIONS(":\xfe::");
-	opt = getopt32(argv, "csqO:P:Y:U:" /*ignored:*/ "t:T:",
+	opt_complementary = "-1" IF_FEATURE_WGET_TIMEOUT(":T+") IF_FEATURE_WGET_LONG_OPTIONS(":\xfe::");
+	opt = getopt32(argv, "csqO:P:Y:U:T:" /*ignored:*/ "t:",
 				&fname_out, &dir_prefix,
 				&proxy_flag, &user_agent,
-				NULL, /* -t RETRIES */
-				NULL /* -T NETWORK_READ_TIMEOUT */
+				IF_FEATURE_WGET_TIMEOUT(&G.timeout_seconds) IF_NOT_FEATURE_WGET_TIMEOUT(NULL),
+				NULL /* -t RETRIES */
 				IF_FEATURE_WGET_LONG_OPTIONS(, &headers_llist)
 				IF_FEATURE_WGET_LONG_OPTIONS(, &post_data)
 				);
@@ -692,6 +611,7 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 
 	/* TODO: compat issue: should handle "wget URL1 URL2..." */
 
+	target.user = NULL;
 	parse_url(argv[optind], &target);
 
 	/* Use the proxy if necessary */
@@ -699,6 +619,7 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 	if (use_proxy) {
 		proxy = getenv(target.is_ftp ? "ftp_proxy" : "http_proxy");
 		if (proxy && proxy[0]) {
+			server.user = NULL;
 			parse_url(proxy, &server);
 		} else {
 			use_proxy = 0;
@@ -733,19 +654,19 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 		}
 	}
 #if ENABLE_FEATURE_WGET_STATUSBAR
-	curfile = bb_get_last_path_component_nostrip(fname_out);
+	G.curfile = bb_get_last_path_component_nostrip(fname_out);
 #endif
 
 	/* Impossible?
 	if ((opt & WGET_OPT_CONTINUE) && !fname_out)
-		bb_error_msg_and_die("cannot specify continue (-c) without a filename (-O)");
+		bb_error_msg_and_die("can't specify continue (-c) without a filename (-O)");
 	*/
 
 	/* Determine where to start transfer */
 	if (opt & WGET_OPT_CONTINUE) {
 		output_fd = open(fname_out, O_WRONLY);
 		if (output_fd >= 0) {
-			beg_range = xlseek(output_fd, 0, SEEK_END);
+			G.beg_range = xlseek(output_fd, 0, SEEK_END);
 		}
 		/* File doesn't exist. We do not create file here yet.
 		 * We are not sure it exists on remove side */
@@ -796,8 +717,8 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 		}
 #endif
 
-		if (beg_range)
-			fprintf(sfp, "Range: bytes=%"OFF_FMT"d-\r\n", beg_range);
+		if (G.beg_range)
+			fprintf(sfp, "Range: bytes=%"OFF_FMT"u-\r\n", G.beg_range);
 #if ENABLE_FEATURE_WGET_LONG_OPTIONS
 		if (extra_headers)
 			fputs(extra_headers, sfp);
@@ -815,6 +736,8 @@ int wget_main(int argc UNUSED_PARAM, char **argv)
 		{ /* If "Connection:" is needed, document why */
 			fprintf(sfp, /* "Connection: close\r\n" */ "\r\n");
 		}
+
+		fflush(sfp);
 
 		/*
 		 * Retrieve HTTP response line and check for "200" status code.
@@ -862,13 +785,13 @@ However, in real world it was observed that some web servers
 */
 		case 204:
 			break;
-		case 300:	/* redirection */
+		case 300:  /* redirection */
 		case 301:
 		case 302:
 		case 303:
 			break;
 		case 206:
-			if (beg_range)
+			if (G.beg_range)
 				break;
 			/* fall through */
 		default:
@@ -889,8 +812,8 @@ However, in real world it was observed that some web servers
 			}
 			key = index_in_strings(keywords, buf) + 1;
 			if (key == KEY_content_length) {
-				content_len = BB_STRTOOFF(str, NULL, 10);
-				if (errno || content_len < 0) {
+				G.content_len = BB_STRTOOFF(str, NULL, 10);
+				if (G.content_len < 0 || errno) {
 					bb_error_msg_and_die("content-length %s is garbage", sanitize_string(str));
 				}
 				G.got_clen = 1;
@@ -953,13 +876,14 @@ However, in real world it was observed that some web servers
 	}
 
 	retrieve_file_data(dfp, output_fd);
+	xclose(output_fd);
 
 	if (dfp != sfp) {
 		/* It's ftp. Close it properly */
 		fclose(dfp);
 		if (ftpcmd(NULL, NULL, sfp, buf) != 226)
 			bb_error_msg_and_die("ftp error: %s", sanitize_string(buf+4));
-		ftpcmd("QUIT", NULL, sfp, buf);
+		/* ftpcmd("QUIT", NULL, sfp, buf); - why bother? */
 	}
 
 	return EXIT_SUCCESS;

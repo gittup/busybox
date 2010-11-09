@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2003  Manuel Novoa III  <mjn3@codepoet.org>
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
@@ -101,7 +101,7 @@ DECLARE_STR_CONV(int, i, u)
 
 /* Specialized */
 
-int BUG_xatou32_unimplemented(void);
+uint32_t BUG_xatou32_unimplemented(void);
 static ALWAYS_INLINE uint32_t xatou32(const char *numstr)
 {
 	if (UINT_MAX == 0xffffffff)
@@ -158,7 +158,7 @@ unsigned bb_strtou(const char *arg, char **endp, int base) FAST_FUNC;
 int bb_strtoi(const char *arg, char **endp, int base) FAST_FUNC;
 #endif
 
-int BUG_bb_strtou32_unimplemented(void);
+uint32_t BUG_bb_strtou32_unimplemented(void);
 static ALWAYS_INLINE
 uint32_t bb_strtou32(const char *arg, char **endp, int base)
 {

@@ -165,7 +165,7 @@ struct globals {
 /* "Bernstein" time format: unix + 0x400000000000000aULL */
 	uint64_t tstart, tnow;
 	svstatus_t svstatus;
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 #define acts         (G.acts        )
 #define service      (G.service     )
@@ -174,6 +174,9 @@ struct globals {
 #define tnow         (G.tnow        )
 #define svstatus     (G.svstatus    )
 #define INIT_G() do { } while (0)
+
+
+#define str_equal(s,t) (!strcmp((s), (t)))
 
 
 static void fatal_cannot(const char *m1) NORETURN;
@@ -221,20 +224,20 @@ static int svstatus_get(void)
 {
 	int fd, r;
 
-	fd = open_write("supervise/ok");
+	fd = open("supervise/ok", O_WRONLY|O_NDELAY);
 	if (fd == -1) {
 		if (errno == ENODEV) {
 			*acts == 'x' ? ok("runsv not running")
 			             : failx("runsv not running");
 			return 0;
 		}
-		warn("cannot open supervise/ok");
+		warn("can't open supervise/ok");
 		return -1;
 	}
 	close(fd);
-	fd = open_read("supervise/status");
+	fd = open("supervise/status", O_RDONLY|O_NDELAY);
 	if (fd == -1) {
-		warn("cannot open supervise/status");
+		warn("can't open supervise/status");
 		return -1;
 	}
 	r = read(fd, &svstatus, 20);
@@ -243,11 +246,11 @@ static int svstatus_get(void)
 	case 20:
 		break;
 	case -1:
-		warn("cannot read supervise/status");
+		warn("can't read supervise/status");
 		return -1;
 	default:
 		errno = 0;
-		warn("cannot read supervise/status: bad format");
+		warn("can't read supervise/status: bad format");
 		return -1;
 	}
 	return 1;
@@ -263,7 +266,7 @@ static unsigned svstatus_print(const char *m)
 
 	if (stat("down", &s) == -1) {
 		if (errno != ENOENT) {
-			bb_perror_msg(WARN"cannot stat %s/down", *service);
+			bb_perror_msg(WARN"can't stat %s/down", *service);
 			return 0;
 		}
 		normallyup = 1;
@@ -303,7 +306,7 @@ static int status(const char *unused UNUSED_PARAM)
 	r = svstatus_print(*service);
 	if (chdir("log") == -1) {
 		if (errno != ENOENT) {
-			printf("; log: "WARN"cannot change to log service directory: %s",
+			printf("; log: "WARN"can't change to log service directory: %s",
 					strerror(errno));
 		}
 	} else if (svstatus_get()) {
@@ -322,7 +325,7 @@ static int checkscript(void)
 
 	if (stat("check", &s) == -1) {
 		if (errno == ENOENT) return 1;
-		bb_perror_msg(WARN"cannot stat %s/check", *service);
+		bb_perror_msg(WARN"can't stat %s/check", *service);
 		return 0;
 	}
 	/* if (!(s.st_mode & S_IXUSR)) return 1; */
@@ -330,11 +333,11 @@ static int checkscript(void)
 	prog[1] = NULL;
 	pid = spawn(prog);
 	if (pid <= 0) {
-		bb_perror_msg(WARN"cannot %s child %s/check", "run", *service);
+		bb_perror_msg(WARN"can't %s child %s/check", "run", *service);
 		return 0;
 	}
 	while (safe_waitpid(pid, &w, 0) == -1) {
-		bb_perror_msg(WARN"cannot %s child %s/check", "wait for", *service);
+		bb_perror_msg(WARN"can't %s child %s/check", "wait for", *service);
 		return 0;
 	}
 	return WEXITSTATUS(w) == 0;
@@ -397,10 +400,10 @@ static int control(const char *a)
 	if (svstatus.want == *a)
 		return 0;
 */
-	fd = open_write("supervise/control");
+	fd = open("supervise/control", O_WRONLY|O_NDELAY);
 	if (fd == -1) {
 		if (errno != ENODEV)
-			warn("cannot open supervise/control");
+			warn("can't open supervise/control");
 		else
 			*a == 'x' ? ok("runsv not running") : failx("runsv not running");
 		return -1;
@@ -409,7 +412,7 @@ static int control(const char *a)
 	r = write(fd, a, l);
 	close(fd);
 	if (r != l) {
-		warn("cannot write to supervise/control");
+		warn("can't write to supervise/control");
 		return -1;
 	}
 	return 1;
@@ -446,7 +449,7 @@ int sv_main(int argc UNUSED_PARAM, char **argv)
 
 	tnow = time(NULL) + 0x400000000000000aULL;
 	tstart = tnow;
-	curdir = open_read(".");
+	curdir = open(".", O_RDONLY|O_NDELAY);
 	if (curdir == -1)
 		fatal_cannot("open current directory");
 
@@ -541,7 +544,7 @@ int sv_main(int argc UNUSED_PARAM, char **argv)
 		}
 		if (chdir(x) == -1) {
  chdir_failed_0:
-			fail("cannot change to service directory");
+			fail("can't change to service directory");
 			goto nullify_service_0;
 		}
 		if (act && (act(acts) == -1)) {
@@ -569,7 +572,7 @@ int sv_main(int argc UNUSED_PARAM, char **argv)
 			}
 			if (chdir(x) == -1) {
  chdir_failed:
-				fail("cannot change to service directory");
+				fail("can't change to service directory");
 				goto nullify_service;
 			}
 			if (cbk(acts) != 0)

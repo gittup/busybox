@@ -1,11 +1,24 @@
 /* vi: set sw=4 ts=4: */
 /*
-   Copyright 2006, Bernhard Reutner-Fischer
-
-   Licensed under the GPL v2 or later, see the file LICENSE in this tarball.
-*/
-#ifndef	BB_PLATFORM_H
+ * Copyright 2006, Bernhard Reutner-Fischer
+ *
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
+ */
+#ifndef BB_PLATFORM_H
 #define BB_PLATFORM_H 1
+
+/* Assume all these functions exist by default.  Platforms where it is not
+ * true will #undef them below.
+ */
+#define HAVE_FDPRINTF 1
+#define HAVE_MEMRCHR 1
+#define HAVE_MKDTEMP 1
+#define HAVE_SETBIT 1
+#define HAVE_STRCASESTR 1
+#define HAVE_STRCHRNUL 1
+#define HAVE_STRSEP 1
+#define HAVE_STRSIGNAL 1
+#define HAVE_VASPRINTF 1
 
 /* Convenience macros to test the version of gcc. */
 #undef __GNUC_PREREQ
@@ -48,6 +61,15 @@
 
 #define UNUSED_PARAM __attribute__ ((__unused__))
 #define NORETURN __attribute__ ((__noreturn__))
+/* "The malloc attribute is used to tell the compiler that a function
+ * may be treated as if any non-NULL pointer it returns cannot alias
+ * any other pointer valid when the function returns. This will often
+ * improve optimization. Standard functions with this property include
+ * malloc and calloc. realloc-like functions have this property as long
+ * as the old pointer is never referred to (including comparing it
+ * to the new pointer) after the function returns a non-NULL value."
+ */
+#define RETURNS_MALLOC __attribute__ ((malloc))
 #define PACKED __attribute__ ((__packed__))
 #define ALIGNED(m) __attribute__ ((__aligned__(m)))
 
@@ -77,6 +99,13 @@
 //__attribute__ ((__externally_visible__))
 #else
 # define EXTERNALLY_VISIBLE
+#endif
+
+/* At 4.4 gcc become much more anal about this, need to use "aliased" types */
+#if __GNUC_PREREQ(4,4)
+# define FIX_ALIASING __attribute__((__may_alias__))
+#else
+# define FIX_ALIASING
 #endif
 
 /* We use __extension__ in some places to suppress -pedantic warnings
@@ -121,34 +150,48 @@
 
 /* ---- Endian Detection ------------------------------------ */
 
+#include <limits.h>
 #if defined(__digital__) && defined(__unix__)
 # include <sex.h>
-# define __BIG_ENDIAN__ (BYTE_ORDER == BIG_ENDIAN)
-# define __BYTE_ORDER BYTE_ORDER
-#elif defined __FreeBSD__
-char *strchrnul(const char *s, int c);
-# include <sys/resource.h>	/* rlimit */
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) \
+   || defined(__APPLE__)
+# include <sys/resource.h>  /* rlimit */
 # include <machine/endian.h>
 # define bswap_64 __bswap64
 # define bswap_32 __bswap32
 # define bswap_16 __bswap16
-# define __BIG_ENDIAN__ (_BYTE_ORDER == _BIG_ENDIAN)
-#elif !defined __APPLE__
+#else
 # include <byteswap.h>
 # include <endian.h>
 #endif
 
-#if defined(__BIG_ENDIAN__) && __BIG_ENDIAN__
+#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN
 # define BB_BIG_ENDIAN 1
 # define BB_LITTLE_ENDIAN 0
-#elif __BYTE_ORDER == __BIG_ENDIAN
+#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN
+# define BB_BIG_ENDIAN 0
+# define BB_LITTLE_ENDIAN 1
+#elif defined(_BYTE_ORDER) && _BYTE_ORDER == _BIG_ENDIAN
 # define BB_BIG_ENDIAN 1
 # define BB_LITTLE_ENDIAN 0
-#elif __BYTE_ORDER == __LITTLE_ENDIAN
+#elif defined(_BYTE_ORDER) && _BYTE_ORDER == _LITTLE_ENDIAN
+# define BB_BIG_ENDIAN 0
+# define BB_LITTLE_ENDIAN 1
+#elif defined(BYTE_ORDER) && BYTE_ORDER == BIG_ENDIAN
+# define BB_BIG_ENDIAN 1
+# define BB_LITTLE_ENDIAN 0
+#elif defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN
+# define BB_BIG_ENDIAN 0
+# define BB_LITTLE_ENDIAN 1
+#elif defined(__386__)
 # define BB_BIG_ENDIAN 0
 # define BB_LITTLE_ENDIAN 1
 #else
-# error "Can't determine endiannes"
+# error "Can't determine endianness"
+#endif
+
+#if ULONG_MAX > 0xffffffff
+# define bb_bswap_64(x) bswap_64(x)
 #endif
 
 /* SWAP_LEnn means "convert CPU<->little_endian by swapping bytes" */
@@ -158,14 +201,18 @@ char *strchrnul(const char *s, int c);
 # define SWAP_BE64(x) (x)
 # define SWAP_LE16(x) bswap_16(x)
 # define SWAP_LE32(x) bswap_32(x)
-# define SWAP_LE64(x) bswap_64(x)
+# define SWAP_LE64(x) bb_bswap_64(x)
+# define IF_BIG_ENDIAN(...) __VA_ARGS__
+# define IF_LITTLE_ENDIAN(...)
 #else
 # define SWAP_BE16(x) bswap_16(x)
 # define SWAP_BE32(x) bswap_32(x)
-# define SWAP_BE64(x) bswap_64(x)
+# define SWAP_BE64(x) bb_bswap_64(x)
 # define SWAP_LE16(x) (x)
 # define SWAP_LE32(x) (x)
 # define SWAP_LE64(x) (x)
+# define IF_BIG_ENDIAN(...)
+# define IF_LITTLE_ENDIAN(...) __VA_ARGS__
 #endif
 
 /* ---- Unaligned access ------------------------------------ */
@@ -173,36 +220,37 @@ char *strchrnul(const char *s, int c);
 /* NB: unaligned parameter should be a pointer, aligned one -
  * a lvalue. This makes it more likely to not swap them by mistake
  */
-#if defined(i386) || defined(__x86_64__)
-# define move_from_unaligned16(v, u16p) ((v) = *(uint16_t*)(u16p))
-# define move_from_unaligned32(v, u32p) ((v) = *(uint32_t*)(u32p))
-# define move_to_unaligned32(u32p, v)   (*(uint32_t*)(u32p) = (v))
+#if defined(i386) || defined(__x86_64__) || defined(__powerpc__)
+# include <stdint.h>
+typedef int      bb__aliased_int      FIX_ALIASING;
+typedef uint16_t bb__aliased_uint16_t FIX_ALIASING;
+typedef uint32_t bb__aliased_uint32_t FIX_ALIASING;
+# define move_from_unaligned_int(v, intp) ((v) = *(bb__aliased_int*)(intp))
+# define move_from_unaligned16(v, u16p) ((v) = *(bb__aliased_uint16_t*)(u16p))
+# define move_from_unaligned32(v, u32p) ((v) = *(bb__aliased_uint32_t*)(u32p))
+# define move_to_unaligned16(u16p, v)   (*(bb__aliased_uint16_t*)(u16p) = (v))
+# define move_to_unaligned32(u32p, v)   (*(bb__aliased_uint32_t*)(u32p) = (v))
 /* #elif ... - add your favorite arch today! */
 #else
 /* performs reasonably well (gcc usually inlines memcpy here) */
+# define move_from_unaligned_int(v, intp) (memcpy(&(v), (intp), sizeof(int)))
 # define move_from_unaligned16(v, u16p) (memcpy(&(v), (u16p), 2))
 # define move_from_unaligned32(v, u32p) (memcpy(&(v), (u32p), 4))
+# define move_to_unaligned16(u16p, v) do { \
+	uint16_t __t = (v); \
+	memcpy((u16p), &__t, 4); \
+} while (0)
 # define move_to_unaligned32(u32p, v) do { \
 	uint32_t __t = (v); \
 	memcpy((u32p), &__t, 4); \
 } while (0)
 #endif
 
-/* ---- Networking ------------------------------------------ */
-
-#ifndef __APPLE__
-# include <arpa/inet.h>
-# if !defined(__socklen_t_defined) && !defined(_SOCKLEN_T_DECLARED)
-typedef int socklen_t;
-# endif
-#else
-# include <netinet/in.h>
-#endif
-
 /* ---- Compiler dependent settings ------------------------- */
 
 #if (defined __digital__ && defined __unix__) \
- || defined __APPLE__ || defined __FreeBSD__
+ || defined __APPLE__ \
+ || defined __FreeBSD__ || defined __OpenBSD__ || defined __NetBSD__
 # undef HAVE_MNTENT_H
 # undef HAVE_SYS_STATFS_H
 #else
@@ -216,33 +264,9 @@ typedef int socklen_t;
 
 /* ---- Miscellaneous --------------------------------------- */
 
-#if defined(__GNU_LIBRARY__) && __GNU_LIBRARY__ < 5 && \
-	!defined(__dietlibc__) && \
-	!defined(_NEWLIB_VERSION) && \
-	!(defined __digital__ && defined __unix__)
-# error "Sorry, this libc version is not supported :("
-#endif
-
-/* Don't perpetuate e2fsck crap into the headers.  Clean up e2fsck instead. */
-
 #if defined __GLIBC__ || defined __UCLIBC__ \
  || defined __dietlibc__ || defined _NEWLIB_VERSION
 # include <features.h>
-# define HAVE_FEATURES_H
-# include <stdint.h>
-# define HAVE_STDINT_H
-#elif !defined __APPLE__
-/* Largest integral types. */
-# if BB_BIG_ENDIAN
-/* Looks BROKEN! */
-typedef long                intmax_t;
-typedef unsigned long       uintmax_t;
-# else
-__extension__
-typedef long long           intmax_t;
-__extension__
-typedef unsigned long long  uintmax_t;
-# endif
 #endif
 
 /* Size-saving "small" ints (arch-dependent) */
@@ -269,10 +293,12 @@ typedef unsigned smalluint;
 #if 1 /* if needed: !defined(arch1) && !defined(arch2) */
 # define ALIGN1 __attribute__((aligned(1)))
 # define ALIGN2 __attribute__((aligned(2)))
+# define ALIGN4 __attribute__((aligned(4)))
 #else
 /* Arches which MUST have 2 or 4 byte alignment for everything are here */
 # define ALIGN1
 # define ALIGN2
+# define ALIGN4
 #endif
 
 
@@ -292,24 +318,6 @@ typedef unsigned smalluint;
 # define USE_FOR_MMU(...) __VA_ARGS__
 #endif
 
-/* Platforms that haven't got dprintf need to implement fdprintf() in
- * libbb.  This would require a platform.c.  It's not going to be cleaned
- * out of the tree, so stop saying it should be. */
-#if !defined(__dietlibc__)
-/* Needed for: glibc */
-/* Not needed for: dietlibc */
-/* Others: ?? (add as needed) */
-# define fdprintf dprintf
-#endif
-
-#if defined(__dietlibc__)
-static ALWAYS_INLINE char* strchrnul(const char *s, char c)
-{
-	while (*s && *s != c) ++s;
-	return (char*)s;
-}
-#endif
-
 /* Don't use lchown with glibc older than 2.1.x */
 #if defined(__GLIBC__) && __GLIBC__ <= 2 && __GLIBC_MINOR__ < 1
 # define lchown chown
@@ -321,7 +329,7 @@ static ALWAYS_INLINE char* strchrnul(const char *s, char c)
 # include <inttypes.h>
 # define PRIu32 "u"
 /* use legacy setpgrp(pid_t,pid_t) for now.  move to platform.c */
-# define bb_setpgrp() do { pid_t __me = getpid(); setpgrp(__me,__me); } while (0)
+# define bb_setpgrp() do { pid_t __me = getpid(); setpgrp(__me, __me); } while (0)
 # if !defined ADJ_OFFSET_SINGLESHOT && defined MOD_CLKA && defined MOD_OFFSET
 #  define ADJ_OFFSET_SINGLESHOT (MOD_CLKA | MOD_OFFSET)
 # endif
@@ -341,5 +349,71 @@ static ALWAYS_INLINE char* strchrnul(const char *s, char c)
 
 #endif
 
+#if defined(__GLIBC__)
+# define fdprintf dprintf
+#endif
+
+#if defined(__dietlibc__)
+# undef HAVE_STRCHRNUL
+#endif
+
+#if defined(__WATCOMC__)
+# undef HAVE_FDPRINTF
+# undef HAVE_MEMRCHR
+# undef HAVE_MKDTEMP
+# undef HAVE_SETBIT
+# undef HAVE_STRCASESTR
+# undef HAVE_STRCHRNUL
+# undef HAVE_STRSEP
+# undef HAVE_STRSIGNAL
+# undef HAVE_VASPRINTF
+#endif
+
+#if defined(__FreeBSD__)
+# undef HAVE_STRCHRNUL
+#endif
+
+/*
+ * Now, define prototypes for all the functions defined in platform.c
+ * These must come after all the HAVE_* macros are defined (or not)
+ */
+
+#ifndef HAVE_FDPRINTF
+extern int fdprintf(int fd, const char *format, ...);
+#endif
+
+#ifndef HAVE_MEMRCHR
+extern void *memrchr(const void *s, int c, size_t n) FAST_FUNC;
+#endif
+
+#ifndef HAVE_MKDTEMP
+extern char *mkdtemp(char *template) FAST_FUNC;
+#endif
+
+#ifndef HAVE_SETBIT
+# define setbit(a, b)  ((a)[(b) >> 3] |= 1 << ((b) & 7))
+# define clrbit(a, b)  ((a)[(b) >> 3] &= ~(1 << ((b) & 7)))
+#endif
+
+#ifndef HAVE_STRCASESTR
+extern char *strcasestr(const char *s, const char *pattern) FAST_FUNC;
+#endif
+
+#ifndef HAVE_STRCHRNUL
+extern char *strchrnul(const char *s, int c) FAST_FUNC;
+#endif
+
+#ifndef HAVE_STRSEP
+extern char *strsep(char **stringp, const char *delim) FAST_FUNC;
+#endif
+
+#ifndef HAVE_STRSIGNAL
+/* Not exactly the same: instead of "Stopped" it shows "STOP" etc */
+# define strsignal(sig) get_signame(sig)
+#endif
+
+#ifndef HAVE_VASPRINTF
+extern int vasprintf(char **string_ptr, const char *format, va_list p) FAST_FUNC;
+#endif
 
 #endif

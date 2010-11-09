@@ -10,7 +10,7 @@
  * Authors of the original ifconfig was:
  *              Fred N. van Kempen, <waltje@uwalt.nl.mugnet.org>
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 /*
@@ -36,8 +36,8 @@
 #include <sys/types.h>
 #include <netinet/if_ether.h>
 #endif
-#include "inet_common.h"
 #include "libbb.h"
+#include "inet_common.h"
 
 #if ENABLE_FEATURE_IFCONFIG_SLIP
 # include <net/if_slip.h>
@@ -260,7 +260,7 @@ static int in_ether(const char *bufp, struct sockaddr *sap);
  * Our main function.
  */
 int ifconfig_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int ifconfig_main(int argc, char **argv)
+int ifconfig_main(int argc UNUSED_PARAM, char **argv)
 {
 	struct ifreq ifr;
 	struct sockaddr_in sai;
@@ -291,19 +291,17 @@ int ifconfig_main(int argc, char **argv)
 
 	/* skip argv[0] */
 	++argv;
-	--argc;
 
 #if ENABLE_FEATURE_IFCONFIG_STATUS
-	if (argc > 0 && (argv[0][0] == '-' && argv[0][1] == 'a' && !argv[0][2])) {
+	if (argv[0] && (argv[0][0] == '-' && argv[0][1] == 'a' && !argv[0][2])) {
 		interface_opt_a = 1;
-		--argc;
 		++argv;
 	}
 #endif
 
-	if (argc <= 1) {
+	if (!argv[0] || !argv[1]) { /* one or no args */
 #if ENABLE_FEATURE_IFCONFIG_STATUS
-		return display_interfaces(argc ? *argv : NULL);
+		return display_interfaces(argv[0] /* can be NULL */);
 #else
 		bb_error_msg_and_die("no support for status display");
 #endif
@@ -372,7 +370,7 @@ int ifconfig_main(int argc, char **argv)
 #endif
 						sai.sin_family = AF_INET;
 						sai.sin_port = 0;
-						if (!strcmp(host, bb_str_default)) {
+						if (strcmp(host, "default") == 0) {
 							/* Default is special, meaning 0.0.0.0. */
 							sai.sin_addr.s_addr = INADDR_ANY;
 						}

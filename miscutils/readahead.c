@@ -7,17 +7,19 @@
  *
  * Copyright (C) 2006  Michael Opdenacker <michael@free-electrons.com>
  *
- * Licensed under GPLv2 or later, see file License in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 #include "libbb.h"
 
 int readahead_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int readahead_main(int argc, char **argv)
+int readahead_main(int argc UNUSED_PARAM, char **argv)
 {
 	int retval = EXIT_SUCCESS;
 
-	if (argc == 1) bb_show_usage();
+	if (!argv[1]) {
+		bb_show_usage();
+	}
 
 	while (*++argv) {
 		int fd = open_or_warn(*argv, O_RDONLY);

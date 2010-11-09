@@ -3,7 +3,7 @@
  *
  * Switch from rootfs to another filesystem as the root of the mount tree.
  *
- * Licensed under GPL version 2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 #include <sys/vfs.h>
 #include <sys/mount.h>
@@ -85,12 +85,14 @@ int switch_root_main(int argc UNUSED_PARAM, char **argv)
 	// Additional sanity checks: we're about to rm -rf /, so be REALLY SURE
 	// we mean it. I could make this a CONFIG option, but I would get email
 	// from all the people who WILL destroy their filesystems.
+	if (stat("/init", &st) != 0 || !S_ISREG(st.st_mode)) {
+		bb_error_msg_and_die("/init is not a regular file");
+	}
 	statfs("/", &stfs); // this never fails
-	if (stat("/init", &st) != 0 || !S_ISREG(st.st_mode)
-	 || ((unsigned)stfs.f_type != RAMFS_MAGIC
-	     && (unsigned)stfs.f_type != TMPFS_MAGIC)
+	if ((unsigned)stfs.f_type != RAMFS_MAGIC
+	 && (unsigned)stfs.f_type != TMPFS_MAGIC
 	) {
-		bb_error_msg_and_die("not rootfs");
+		bb_error_msg_and_die("root filesystem is not ramfs/tmpfs");
 	}
 
 	// Zap everything out of rootdev

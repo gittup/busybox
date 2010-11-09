@@ -1,5 +1,7 @@
 include_rules
 
+lib-@(BLOCKDEV) += blockdev.c
+lib-@(REV) += rev.c
 lib-@(ACPID)             += acpid.c
 lib-@(BLKID)             += blkid.c
 lib-@(DMESG)             += dmesg.c
@@ -8,6 +10,7 @@ lib-@(FDFLUSH)           += freeramdisk.c
 lib-@(FDFORMAT)          += fdformat.c
 lib-@(FDISK)             += fdisk.c
 lib-@(FINDFS)            += findfs.c
+lib-@(FLOCK)             += flock.c
 lib-@(FREERAMDISK)       += freeramdisk.c
 lib-@(FSCK_MINIX)        += fsck_minix.c
 lib-@(GETOPT)            += getopt.c
@@ -16,8 +19,12 @@ lib-@(HWCLOCK)           += hwclock.c
 lib-@(IPCRM)             += ipcrm.c
 lib-@(IPCS)              += ipcs.c
 lib-@(LOSETUP)           += losetup.c
+lib-@(LSPCI)             += lspci.c
+lib-@(LSUSB)             += lsusb.c
 lib-@(MDEV)              += mdev.c
+lib-@(MKFS_EXT2)         += mkfs_ext2.c
 lib-@(MKFS_MINIX)        += mkfs_minix.c
+lib-@(MKFS_REISER)       += mkfs_reiser.c
 lib-@(MKFS_VFAT)         += mkfs_vfat.c
 lib-@(MKSWAP)            += mkswap.c
 lib-@(MORE)              += more.c

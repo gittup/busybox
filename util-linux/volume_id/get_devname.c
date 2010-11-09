@@ -5,7 +5,7 @@
  * Copyright (C) 2006 by Jason Schoon <floydpink@gmail.com>
  * Some portions cribbed from e2fsprogs, util-linux, dosfstools
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 #include <sys/mount.h> /* BLKGETSIZE64 */
 #if !defined(BLKGETSIZE64)
@@ -44,7 +44,7 @@ get_label_uuid(int fd, char **label, char **uuid)
 	if (vid->label[0] != '\0' || vid->uuid[0] != '\0') {
 		*label = xstrndup(vid->label, sizeof(vid->label));
 		*uuid  = xstrndup(vid->uuid, sizeof(vid->uuid));
-		dbg("found label '%s', uuid '%s' on %s", *label, *uuid, device);
+		dbg("found label '%s', uuid '%s'", *label, *uuid);
 		rv = 0;
 	}
  ret:
@@ -259,4 +259,21 @@ char *get_devname_from_uuid(const char *spec)
 		uc = uc->next;
 	}
 	return NULL;
+}
+
+int resolve_mount_spec(char **fsname)
+{
+	char *tmp = *fsname;
+
+	if (strncmp(*fsname, "UUID=", 5) == 0)
+		tmp = get_devname_from_uuid(*fsname + 5);
+	else if (strncmp(*fsname, "LABEL=", 6) == 0)
+		tmp = get_devname_from_label(*fsname + 6);
+
+	if (tmp == *fsname)
+		return 0; /* no UUID= or LABEL= prefix found */
+
+	if (tmp)
+		*fsname = tmp;
+	return 1;
 }

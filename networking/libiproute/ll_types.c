@@ -1,13 +1,11 @@
 /* vi: set sw=4 ts=4: */
 /*
- * ll_types.c
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
  *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+ * Authors: Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  */
 #include <arpa/inet.h>
 #include <linux/if_arp.h>
@@ -15,7 +13,7 @@
 #include "libbb.h"
 #include "rt_names.h"
 
-const char *ll_type_n2a(int type, char *buf, int len)
+const char* FAST_FUNC ll_type_n2a(int type, char *buf)
 {
 	static const char arphrd_name[] =
 	/* 0,                  */ "generic" "\0"
@@ -200,6 +198,6 @@ const char *ll_type_n2a(int type, char *buf, int len)
 			return aname;
 		aname += strlen(aname) + 1;
 	}
-	snprintf(buf, len, "[%d]", type);
+	sprintf(buf, "[%d]", type);
 	return buf;
 }

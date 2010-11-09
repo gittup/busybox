@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2003-2004 by Erik Andersen <andersen@codepoet.org>
  *
- * Licensed under the GPL version 2, see the file LICENSE in this tarball.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 
 #include "libbb.h"
@@ -35,7 +35,7 @@
 #endif
 
 int last_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int last_main(int argc, char **argv UNUSED_PARAM)
+int last_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
 	struct utmp ut;
 	int n, file = STDIN_FILENO;
@@ -46,17 +46,17 @@ int last_main(int argc, char **argv UNUSED_PARAM)
 	static const char _ut_lin[] ALIGN1 =
 			"~\0" "{\0" "|\0" /* "LOGIN\0" "date\0" */;
 	enum {
-		TYPE_RUN_LVL = RUN_LVL,		/* 1 */
-		TYPE_BOOT_TIME = BOOT_TIME,	/* 2 */
+		TYPE_RUN_LVL = RUN_LVL,         /* 1 */
+		TYPE_BOOT_TIME = BOOT_TIME,     /* 2 */
 		TYPE_SHUTDOWN_TIME = SHUTDOWN_TIME
 	};
 	enum {
-		_TILDE = EMPTY,				/* 0 */
-		TYPE_NEW_TIME,	/* NEW_TIME, 3 */
-		TYPE_OLD_TIME	/* OLD_TIME, 4 */
+		_TILDE = EMPTY, /* 0 */
+		TYPE_NEW_TIME,  /* NEW_TIME, 3 */
+		TYPE_OLD_TIME   /* OLD_TIME, 4 */
 	};
 
-	if (argc > 1) {
+	if (argv[1]) {
 		bb_show_usage();
 	}
 	file = xopen(bb_path_wtmp_file, O_RDONLY);
@@ -92,7 +92,8 @@ int last_main(int argc, char **argv UNUSED_PARAM)
 				goto next;
 			}
 			if (ut.ut_type != DEAD_PROCESS
-			 && ut.ut_user[0] && ut.ut_line[0]
+			 && ut.ut_user[0]
+			 && ut.ut_line[0]
 			) {
 				ut.ut_type = USER_PROCESS;
 			}

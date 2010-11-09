@@ -1,6 +1,6 @@
 /*
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 /*
 You need to define the following (example):
@@ -25,9 +25,8 @@ unsigned type FAST_FUNC xstrtou(_range_sfx)(const char *numstr, int base,
 	int old_errno;
 	char *e;
 
-	/* Disallow '-' and any leading whitespace. Make sure we get the
-	 * actual isspace function rather than a macro implementaion. */
-	if (*numstr == '-' || *numstr == '+' || (isspace)(*numstr))
+	/* Disallow '-' and any leading whitespace. */
+	if (*numstr == '-' || *numstr == '+' || isspace(*numstr))
 		goto inval;
 
 	/* Since this is a lib function, we're not allowed to reset errno to 0.
@@ -42,7 +41,7 @@ unsigned type FAST_FUNC xstrtou(_range_sfx)(const char *numstr, int base,
 	if (errno || numstr == e)
 		goto inval; /* error / no digits / illegal trailing chars */
 
-	errno = old_errno;	/* Ok.  So restore errno. */
+	errno = old_errno;  /* Ok.  So restore errno. */
 
 	/* Do optional suffix parsing.  Allow 'empty' suffix tables.
 	 * Note that we also allow nul suffixes with associated multipliers,

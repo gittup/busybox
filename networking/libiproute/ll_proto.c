@@ -1,13 +1,11 @@
 /* vi: set sw=4 ts=4: */
 /*
- * ll_proto.c
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
  *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+ * Authors: Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  */
 
 #include "libbb.h"
@@ -98,7 +96,7 @@ __PF(ECONET,econet)
 #undef __PF
 
 
-const char *ll_proto_n2a(unsigned short id, char *buf, int len)
+const char* FAST_FUNC ll_proto_n2a(unsigned short id, char *buf, int len)
 {
 	unsigned i;
 	id = ntohs(id);
@@ -110,7 +108,7 @@ const char *ll_proto_n2a(unsigned short id, char *buf, int len)
 	return buf;
 }
 
-int ll_proto_a2n(unsigned short *id, char *buf)
+int FAST_FUNC ll_proto_a2n(unsigned short *id, char *buf)
 {
 	unsigned i;
 	for (i = 0; i < ARRAY_SIZE(llproto_names); i++) {
@@ -126,4 +124,3 @@ int ll_proto_a2n(unsigned short *id, char *buf)
 	*id = htons(i);
 	return 0;
 }
-

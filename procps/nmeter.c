@@ -1,9 +1,10 @@
 /*
-** Licensed under the GPL v2, see the file LICENSE in this tarball
-**
-** Based on nanotop.c from floppyfw project
-**
-** Contact me: vda.linux@googlemail.com */
+ * Licensed under GPLv2, see file LICENSE in this source tree.
+ *
+ * Based on nanotop.c from floppyfw project
+ *
+ * Contact me: vda.linux@googlemail.com
+ */
 
 //TODO:
 // simplify code
@@ -422,7 +423,7 @@ static s_stat* init_int(const char *param)
 	if (param[0] == '\0') {
 		s->no = 1;
 	} else {
-		int n = xatoi_u(param);
+		int n = xatoi_positive(param);
 		s->no = n + 2;
 	}
 	return (s_stat*)s;
@@ -785,7 +786,7 @@ static init_func *const init_functions[] = {
 };
 
 int nmeter_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int nmeter_main(int argc, char **argv)
+int nmeter_main(int argc UNUSED_PARAM, char **argv)
 {
 	char buf[32];
 	s_stat *first = NULL;
@@ -797,7 +798,7 @@ int nmeter_main(int argc, char **argv)
 
 	xchdir("/proc");
 
-	if (argc != 2)
+	if (!argv[1])
 		bb_show_usage();
 
 	if (open_read_close("version", buf, sizeof(buf)-1) > 0) {

@@ -1,14 +1,12 @@
 /* vi: set sw=4 ts=4: */
 /*
- * utils.c
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+ * Authors: Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  *
  * Changes:
  *
- * Rani Assaf <rani@magic.metawire.com> 980929:	resolve addresses
+ * Rani Assaf <rani@magic.metawire.com> 980929: resolve addresses
  */
 
 #include "libbb.h"
@@ -22,6 +20,7 @@ unsigned get_unsigned(char *arg, const char *errmsg)
 
 	if (*arg) {
 		res = strtoul(arg, &ptr, 0);
+//FIXME: "" will be accepted too, is it correct?!
 		if (!*ptr && res <= UINT_MAX) {
 			return res;
 		}
@@ -36,6 +35,7 @@ uint32_t get_u32(char *arg, const char *errmsg)
 
 	if (*arg) {
 		res = strtoul(arg, &ptr, 0);
+//FIXME: "" will be accepted too, is it correct?!
 		if (!*ptr && res <= 0xFFFFFFFFUL) {
 			return res;
 		}
@@ -50,6 +50,7 @@ uint16_t get_u16(char *arg, const char *errmsg)
 
 	if (*arg) {
 		res = strtoul(arg, &ptr, 0);
+//FIXME: "" will be accepted too, is it correct?!
 		if (!*ptr && res <= 0xFFFF) {
 			return res;
 		}
@@ -61,7 +62,7 @@ int get_addr_1(inet_prefix *addr, char *name, int family)
 {
 	memset(addr, 0, sizeof(*addr));
 
-	if (strcmp(name, bb_str_default) == 0
+	if (strcmp(name, "default") == 0
 	 || strcmp(name, "all") == 0
 	 || strcmp(name, "any") == 0
 	) {
@@ -100,7 +101,7 @@ static int get_prefix_1(inet_prefix *dst, char *arg, int family)
 
 	memset(dst, 0, sizeof(*dst));
 
-	if (strcmp(arg, bb_str_default) == 0
+	if (strcmp(arg, "default") == 0
 	 || strcmp(arg, "all") == 0
 	 || strcmp(arg, "any") == 0
 	) {
@@ -133,7 +134,7 @@ static int get_prefix_1(inet_prefix *dst, char *arg, int family)
 				if (!(host & (host + 1))) {
 					for (plen = 0; mask; mask <<= 1)
 						++plen;
-					if (plen >= 0 && plen <= dst->bitlen) {
+					if (plen <= dst->bitlen) {
 						dst->bitlen = plen;
 						/* dst->flags |= PREFIXLEN_SPECIFIED; */
 					} else

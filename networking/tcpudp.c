@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2007 Denys Vlasenko.
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 
 /* Based on ipsvd-0.12.1. This tcpsvd accepts all options
@@ -30,9 +30,12 @@
  */
 
 #include "libbb.h"
+
 /* Wants <limits.h> etc, thus included after libbb.h: */
+#ifdef __linux__
 #include <linux/types.h> /* for __be32 etc */
 #include <linux/netfilter_ipv4.h>
+#endif
 
 // TODO: move into this file:
 #include "tcpudp_perhost.h"
@@ -50,7 +53,7 @@ struct globals {
 	unsigned cmax;
 	char **env_cur;
 	char *env_var[1]; /* actually bigger */
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 #define verbose      (G.verbose     )
 #define max_per_host (G.max_per_host)
@@ -85,8 +88,7 @@ static void undo_xsetenv(void)
 	char **pp = env_cur = &env_var[0];
 	while (*pp) {
 		char *var = *pp;
-		bb_unsetenv(var);
-		free(var);
+		bb_unsetenv_and_free(var);
 		*pp++ = NULL;
 	}
 }
@@ -239,7 +241,7 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 	client = 0;
 	if ((getuid() == 0) && !(opts & OPT_u)) {
 		xfunc_exitcode = 100;
-		bb_error_msg_and_die("-U ssluser must be set when running as root");
+		bb_error_msg_and_die(bb_msg_you_must_be_root);
 	}
 	if (opts & OPT_u)
 		if (!uidgid_get(&sslugid, ssluser, 1)) {
@@ -251,14 +253,14 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 	if (!cert) cert = "./cert.pem";
 	if (!key) key = cert;
 	if (matrixSslOpen() < 0)
-		fatal("cannot initialize ssl");
+		fatal("can't initialize ssl");
 	if (matrixSslReadKeys(&keys, cert, key, 0, ca) < 0) {
 		if (client)
-			fatal("cannot read cert, key, or ca file");
-		fatal("cannot read cert or key file");
+			fatal("can't read cert, key, or ca file");
+		fatal("can't read cert or key file");
 	}
 	if (matrixSslNewSession(&ssl, keys, 0, SSL_FLAGS_SERVER) < 0)
-		fatal("cannot create ssl session");
+		fatal("can't create ssl session");
 #endif
 
 	sig_block(SIGCHLD);
@@ -425,7 +427,7 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 			if (opts & OPT_h) {
 				free_me1 = remote_hostname = xmalloc_sockaddr2host_noport(&remote.u.sa);
 				if (!remote_hostname) {
-					bb_error_msg("cannot look up hostname for %s", remote_addr);
+					bb_error_msg("can't look up hostname for %s", remote_addr);
 					remote_hostname = remote_addr;
 				}
 			}
@@ -441,7 +443,7 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 				if (!local_hostname) {
 					free_me2 = local_hostname = xmalloc_sockaddr2host_noport(&local.u.sa);
 					if (!local_hostname)
-						bb_error_msg_and_die("cannot look up hostname for %s", local_addr);
+						bb_error_msg_and_die("can't look up hostname for %s", local_addr);
 				}
 				/* else: local_hostname is not NULL, but is NOT malloced! */
 			}
@@ -465,6 +467,7 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 			/* setup ucspi env */
 			const char *proto = tcp ? "TCP" : "UDP";
 
+#ifdef SO_ORIGINAL_DST
 			/* Extract "original" destination addr:port
 			 * from Linux firewall. Useful when you redirect
 			 * an outbond connection to local handler, and it needs
@@ -474,6 +477,7 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 				xsetenv_plain("TCPORIGDSTADDR", addr);
 				free(addr);
 			}
+#endif
 			xsetenv_plain("PROTO", proto);
 			xsetenv_proto(proto, "LOCALADDR", local_addr);
 			xsetenv_proto(proto, "REMOTEADDR", remote_addr);
@@ -502,10 +506,10 @@ int tcpudpsvd_main(int argc UNUSED_PARAM, char **argv)
 #ifdef SSLSVD
 	strcpy(id, utoa(pid));
 	ssl_io(0, argv);
+	bb_perror_msg_and_die("can't execute '%s'", argv[0]);
 #else
-	BB_EXECVP(argv[0], argv);
+	BB_EXECVP_or_die(argv);
 #endif
-	bb_perror_msg_and_die("exec '%s'", argv[0]);
 }
 
 /*

@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2009 Bernhard Reutner-Fischer
  *
- * Licensed under the GPL v2 or later, see the file LICENSE in this tarball.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
  */
 #include "libbb.h"
@@ -32,8 +32,10 @@ int beep_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int beep_main(int argc, char **argv)
 {
 	int speaker = get_console_fd_or_die();
-	unsigned length, delay, rep;
-	unsigned tickrate_div_freq;
+	unsigned tickrate_div_freq = tickrate_div_freq; /* for compiler */
+	unsigned length = length;
+	unsigned delay = delay;
+	unsigned rep = rep;
 	int c;
 
 	c = 'n';
@@ -77,11 +79,11 @@ int beep_main(int argc, char **argv)
 		}
 		while (rep) {
 //bb_info_msg("rep[%d] freq=%d, length=%d, delay=%d", rep, freq, length, delay);
-			xioctl(speaker, KIOCSOUND, (void*)(long)tickrate_div_freq);
+			xioctl(speaker, KIOCSOUND, (void*)(uintptr_t)tickrate_div_freq);
 			usleep(1000 * length);
 			ioctl(speaker, KIOCSOUND, (void*)0);
 			if (--rep)
-				usleep(delay);
+				usleep(1000 * delay);
 		}
 	}
 

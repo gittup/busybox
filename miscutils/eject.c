@@ -5,7 +5,7 @@
  * Copyright (C) 2004  Peter Willis <psyphreak@phreaker.net>
  * Copyright (C) 2005  Tito Ragusa <farmatito@tiscali.it>
  *
- * Licensed under the GPL v2 or later, see the file LICENSE in this tarball.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 /*
@@ -16,6 +16,7 @@
 #include <sys/mount.h>
 #include "libbb.h"
 /* Must be after libbb.h: they need size_t */
+#include "fix_u32.h"
 #include <scsi/sg.h>
 #include <scsi/scsi.h>
 
@@ -75,7 +76,7 @@ static void eject_cdrom(unsigned flags, const char *dev)
 	int cmd = CDROMEJECT;
 
 	if (flags & FLAG_CLOSE
-	 || (flags & FLAG_SMART && ioctl(dev_fd, CDROM_DRIVE_STATUS) == CDS_TRAY_OPEN)
+	 || ((flags & FLAG_SMART) && ioctl(dev_fd, CDROM_DRIVE_STATUS) == CDS_TRAY_OPEN)
 	) {
 		cmd = CDROMCLOSETRAY;
 	}
@@ -103,7 +104,7 @@ int eject_main(int argc UNUSED_PARAM, char **argv)
 	   eject /dev/cdrom
 	*/
 
-	xmove_fd(xopen(device, O_RDONLY|O_NONBLOCK), dev_fd);
+	xmove_fd(xopen_nonblocking(device), dev_fd);
 
 	if (ENABLE_FEATURE_EJECT_SCSI && (flags & FLAG_SCSI))
 		eject_scsi(device);

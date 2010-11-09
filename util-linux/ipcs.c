@@ -5,7 +5,7 @@
  * 01 Sept 2004 - Rodney Radford <rradford@mindspring.com>
  * Adapted for busybox from util-linux-2.12a.
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 /* X/OPEN tells us to use <sys/{types,ipc,sem}.h> for semctl() */
@@ -115,7 +115,7 @@ static void print_perms(int id, struct ipc_perm *ipcp)
 }
 
 
-static void do_shm(void)
+static NOINLINE void do_shm(void)
 {
 	int maxid, shmid, id;
 	struct shmid_ds shmseg;
@@ -242,7 +242,7 @@ static void do_shm(void)
 }
 
 
-static void do_sem(void)
+static NOINLINE void do_sem(void)
 {
 	int maxid, semid, id;
 	struct semid_ds semary;
@@ -348,7 +348,7 @@ static void do_sem(void)
 }
 
 
-static void do_msg(void)
+static NOINLINE void do_msg(void)
 {
 	int maxid, msqid, id;
 	struct msqid_ds msgque;

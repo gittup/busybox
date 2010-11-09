@@ -6,7 +6,7 @@
  * Copyright (C) 1999,2000,2001 by John Beppu <beppu@codepoet.org>
  * Copyright (C) 2002  Edward Betts <edward@debian.org>
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 /* BB_AUDIT SUSv3 compliant (unless default blocksize set to 1k) */
@@ -50,7 +50,7 @@ struct globals {
 	int slink_depth;
 	int du_depth;
 	dev_t dir_dev;
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 
 
@@ -58,14 +58,17 @@ static void print(unsigned long size, const char *filename)
 {
 	/* TODO - May not want to defer error checking here. */
 #if ENABLE_FEATURE_HUMAN_READABLE
-	printf("%s\t%s\n", make_human_readable_str(size, 512, G.disp_hr),
+	printf("%s\t%s\n",
+			/* size x 512 / G.disp_hr, show one fractional,
+			 * use suffixes if G.disp_hr == 0 */
+			make_human_readable_str(size, 512, G.disp_hr),
 			filename);
 #else
 	if (G.disp_k) {
 		size++;
 		size >>= 1;
 	}
-	printf("%ld\t%s\n", size, filename);
+	printf("%lu\t%s\n", size, filename);
 #endif
 }
 

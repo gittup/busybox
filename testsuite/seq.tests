@@ -2,11 +2,11 @@
 
 # SUSv3 compliant seq tests.
 # Copyright 2006 by Rob Landley <rob@landley.net>
-# Licensed under GPL v2, see file LICENSE for details.
+# Licensed under GPLv2, see file LICENSE in this source tree.
 
 # AUDIT: Full SUSv3 coverage (except internationalization).
 
-. testing.sh
+. ./testing.sh
 
 # testing "test name" "options" "expected result" "file input" "stdin"
 #   file input will be file called "input"

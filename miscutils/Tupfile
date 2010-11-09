@@ -1,5 +1,10 @@
 include_rules
 
+lib-@(CONSPY) += conspy.c
+lib-@(NANDWRITE) += nandwrite.c
+lib-@(NANDDUMP) += nandwrite.c
+lib-@(UBIATTACH)   += ubi_attach_detach.c
+lib-@(UBIDETACH)   += ubi_attach_detach.c
 lib-@(ADJTIMEX)    += adjtimex.c
 lib-@(BBCONFIG)    += bbconfig.c
 lib-@(BEEP)        += beep.c
@@ -12,6 +17,7 @@ lib-@(DEVFSD)      += devfsd.c
 lib-@(DEVMEM)      += devmem.c
 lib-@(EJECT)       += eject.c
 lib-@(FBSPLASH)    += fbsplash.c
+lib-@(FLASHCP)     += flashcp.c
 lib-@(FLASH_ERASEALL) += flash_eraseall.c
 lib-@(FLASH_LOCK)     += flash_lock_unlock.c
 lib-@(FLASH_UNLOCK)   += flash_lock_unlock.c
@@ -28,6 +34,7 @@ lib-@(MOUNTPOINT)  += mountpoint.c
 lib-@(MT)          += mt.c
 lib-@(RAIDAUTORUN) += raidautorun.c
 lib-@(READAHEAD)   += readahead.c
+lib-@(RFKILL)      += rfkill.c
 lib-@(RUNLEVEL)    += runlevel.c
 lib-@(RX)          += rx.c
 lib-@(SETSID)      += setsid.c
@@ -37,6 +44,7 @@ lib-@(TIME)        += time.c
 lib-@(TIMEOUT)     += timeout.c
 lib-@(TTYSIZE)     += ttysize.c
 lib-@(VOLNAME)     += volname.c
+lib-@(WALL)        += wall.c
 lib-@(WATCHDOG)    += watchdog.c
 
 include $(BUSYBOX_ROOT)/busybox.tup

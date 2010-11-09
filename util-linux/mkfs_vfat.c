@@ -5,7 +5,7 @@
  *
  * Busybox'ed (2009) by Vladimir Dronnikov <dronnikov@gmail.com>
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 #include "libbb.h"
 
@@ -16,7 +16,6 @@
 # define BLKSSZGET _IO(0x12, 104)
 #endif
 //#include <linux/msdos_fs.h>
-#include "volume_id/volume_id_internal.h"
 
 #define SECTOR_SIZE             512
 
@@ -29,7 +28,7 @@
 
 #define ATTR_VOLUME     8
 
-#define	NUM_FATS        2
+#define NUM_FATS        2
 
 /* FAT32 filesystem looks like this:
  * sector -nn...-1: "hidden" sectors, all sectors before this partition
@@ -79,7 +78,7 @@ struct msdos_dir_entry {
 	uint16_t date;           /* 018 date */
 	uint16_t start;          /* 01a first cluster */
 	uint32_t size;           /* 01c file size in bytes */
-} __attribute__ ((packed));
+} PACKED;
 
 /* Example of boot sector's beginning:
 0000  eb 58 90 4d 53 57 49 4e  34 2e 31 00 02 08 26 00  |...MSWIN4.1...&.|
@@ -96,11 +95,12 @@ struct msdos_volume_info { /* (offsets are relative to start of boot sector) */
 	uint32_t volume_id32;     /* 043 volume ID number */
 	char     volume_label[11];/* 047 volume label */
 	char     fs_type[8];      /* 052 typically "FATnn" */
-} __attribute__ ((packed));       /* 05a end. Total size 26 (0x1a) bytes */
+} PACKED;                         /* 05a end. Total size 26 (0x1a) bytes */
 
 struct msdos_boot_sector {
-	char     boot_jump[3];       /* 000 short or near jump instruction */
-	char     system_id[8];       /* 003 name - can be used to special case partition manager volumes */
+	/* We use strcpy to fill both, and gcc-4.4.x complains if they are separate */
+	char     boot_jump_and_sys_id[3+8]; /* 000 short or near jump instruction */
+	/*char   system_id[8];*/     /* 003 name - can be used to special case partition manager volumes */
 	uint16_t bytes_per_sect;     /* 00b bytes per logical sector */
 	uint8_t  sect_per_clust;     /* 00d sectors/cluster */
 	uint16_t reserved_sect;      /* 00e reserved sectors (sector offset of 1st FAT relative to volume start) */
@@ -124,7 +124,7 @@ struct msdos_boot_sector {
 	char     boot_code[0x200 - 0x5a - 2]; /* 05a */
 #define BOOT_SIGN 0xAA55
 	uint16_t boot_sign;          /* 1fe */
-} __attribute__ ((packed));
+} PACKED;
 
 #define FAT_FSINFO_SIG1 0x41615252
 #define FAT_FSINFO_SIG2 0x61417272
@@ -137,7 +137,7 @@ struct fat32_fsinfo {
 	uint32_t reserved2[3];
 	uint16_t reserved3;          /* 1fc */
 	uint16_t boot_sign;          /* 1fe */
-} __attribute__ ((packed));
+} PACKED;
 
 struct bug_check {
 	char BUG1[sizeof(struct msdos_dir_entry  ) == 0x20 ? 1 : -1];
@@ -168,15 +168,15 @@ static const char boot_code[] ALIGN1 =
 
 
 #define MARK_CLUSTER(cluster, value) \
-	((uint32_t *)fat)[cluster] = cpu_to_le32(value)
+	((uint32_t *)fat)[cluster] = SWAP_LE32(value)
 
 void BUG_unsupported_field_size(void);
 #define STORE_LE(field, value) \
 do { \
 	if (sizeof(field) == 4) \
-		field = cpu_to_le32(value); \
+		field = SWAP_LE32(value); \
 	else if (sizeof(field) == 2) \
-		field = cpu_to_le16(value); \
+		field = SWAP_LE16(value); \
 	else if (sizeof(field) == 1) \
 		field = (value); \
 	else \
@@ -208,7 +208,7 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 	int dev;
 	unsigned bytes_per_sect;
 	unsigned sect_per_fat;
-  	unsigned opts;
+	unsigned opts;
 	uint16_t sect_per_track;
 	uint8_t media_byte;
 	uint8_t sect_per_clust;
@@ -244,15 +244,13 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 	// default volume ID = creation time
 	volume_id = time(NULL);
 
-	dev = xopen(device_name, O_EXCL | O_RDWR);
-	if (fstat(dev, &st) < 0)
-		bb_simple_perror_msg_and_die(device_name);
+	dev = xopen(device_name, O_RDWR);
+	xfstat(dev, &st, device_name);
 
 	//
 	// Get image size and sector size
 	//
 	bytes_per_sect = SECTOR_SIZE;
-	volume_size_bytes = st.st_size;
 	if (!S_ISBLK(st.st_mode)) {
 		if (!S_ISREG(st.st_mode)) {
 			if (!argv[1])
@@ -262,10 +260,6 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 		opts &= ~OPT_c;
 	} else {
 		int min_bytes_per_sect;
-
-		// more portable than BLKGETSIZE[64]
-		volume_size_bytes = xlseek(dev, 0, SEEK_END);
-		xlseek(dev, 0, SEEK_SET);
 #if 0
 		unsigned device_num;
 		// for true block devices we do check sanity
@@ -290,12 +284,7 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 			bb_error_msg("for this device sector size is %u", min_bytes_per_sect);
 		}
 	}
-	if (argv[1]) {
-		volume_size_bytes = XATOOFF(argv[1]);
-		if (volume_size_bytes >= MAXINT(off_t) / 1024)
-			bb_error_msg_and_die("image size is too big");
-		volume_size_bytes *= 1024;
-	}
+	volume_size_bytes = get_volume_size_in_bytes(dev, argv[1], 1024, /*extend:*/ 1);
 	volume_size_sect = volume_size_bytes / bytes_per_sect;
 
 	//
@@ -391,16 +380,22 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 	while (1) {
 		while (1) {
 			int spf_adj;
-			off_t tcl = (volume_size_sect - reserved_sect - NUM_FATS * sect_per_fat) / sect_per_clust;
+			uoff_t tcl = (volume_size_sect - reserved_sect - NUM_FATS * sect_per_fat) / sect_per_clust;
 			// tcl may be > MAX_CLUST_32 here, but it may be
 			// because sect_per_fat is underestimated,
 			// and with increased sect_per_fat it still may become
 			// <= MAX_CLUST_32. Therefore, we do not check
 			// against MAX_CLUST_32, but against a bigger const:
-			if (tcl > 0x7fffffff)
+			if (tcl > 0x80ffffff)
 				goto next;
 			total_clust = tcl; // fits in uint32_t
-			spf_adj = ((total_clust + 2) * 4 + bytes_per_sect - 1) / bytes_per_sect - sect_per_fat;
+			// Every cluster needs 4 bytes in FAT. +2 entries since
+			// FAT has space for non-existent clusters 0 and 1.
+			// Let's see how many sectors that needs.
+			//May overflow at "*4":
+			//spf_adj = ((total_clust+2) * 4 + bytes_per_sect-1) / bytes_per_sect - sect_per_fat;
+			//Same in the more obscure, non-overflowing form:
+			spf_adj = ((total_clust+2) + (bytes_per_sect/4)-1) / (bytes_per_sect/4) - sect_per_fat;
 #if 0
 			bb_error_msg("sect_per_clust:%u sect_per_fat:%u total_clust:%u",
 					sect_per_clust, sect_per_fat, (int)tcl);
@@ -462,10 +457,11 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 		struct msdos_boot_sector *boot_blk = (void*)buf;
 		struct fat32_fsinfo *info = (void*)(buf + bytes_per_sect);
 
-		strcpy(boot_blk->boot_jump, "\xeb\x58\x90" "mkdosfs"); // system_id[8] included :)
+		strcpy(boot_blk->boot_jump_and_sys_id, "\xeb\x58\x90" "mkdosfs");
 		STORE_LE(boot_blk->bytes_per_sect, bytes_per_sect);
 		STORE_LE(boot_blk->sect_per_clust, sect_per_clust);
-		STORE_LE(boot_blk->reserved_sect, reserved_sect);
+		// cast in needed on big endian to suppress a warning
+		STORE_LE(boot_blk->reserved_sect, (uint16_t)reserved_sect);
 		STORE_LE(boot_blk->fats, 2);
 		//STORE_LE(boot_blk->dir_entries, 0); // for FAT32, stays 0
 		if (volume_size_sect <= 0xffff)
@@ -531,16 +527,16 @@ int mkfs_vfat_main(int argc UNUSED_PARAM, char **argv)
 		// create dir entry for volume_label
 		struct msdos_dir_entry *de;
 #if 0
-		struct tm tm;
+		struct tm tm_time;
 		uint16_t t, d;
 #endif
 		de = (void*)buf;
 		strncpy(de->name, volume_label, sizeof(de->name));
 		STORE_LE(de->attr, ATTR_VOLUME);
 #if 0
-		localtime_r(&create_time, &tm);
-		t = (tm.tm_sec >> 1) + (tm.tm_min << 5) + (tm.tm_hour << 11);
-		d = tm.tm_mday + ((tm.tm_mon+1) << 5) + ((tm.tm_year-80) << 9);
+		localtime_r(&create_time, &tm_time);
+		t = (tm_time.tm_sec >> 1) + (tm_time.tm_min << 5) + (tm_time.tm_hour << 11);
+		d = tm_time.tm_mday + ((tm_time.tm_mon+1) << 5) + ((tm_time.tm_year-80) << 9);
 		STORE_LE(de->time, t);
 		STORE_LE(de->date, d);
 		//STORE_LE(de->ctime_cs, 0);

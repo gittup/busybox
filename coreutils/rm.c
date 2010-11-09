@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2001 Matt Kraai <kraai@alumni.carnegiemellon.edu>
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 /* BB_AUDIT SUSv3 compliant */
@@ -42,7 +42,7 @@ int rm_main(int argc UNUSED_PARAM, char **argv)
 			const char *base = bb_get_last_path_component_strip(*argv);
 
 			if (DOT_OR_DOTDOT(base)) {
-				bb_error_msg("cannot remove '.' or '..'");
+				bb_error_msg("can't remove '.' or '..'");
 			} else if (remove_file(*argv, flags) >= 0) {
 				continue;
 			}

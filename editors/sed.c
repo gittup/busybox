@@ -10,7 +10,7 @@
  *
  * MAINTAINER: Rob Landley <rob@landley.net>
  *
- * Licensed under GPL version 2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 
 /* Code overview.
@@ -60,6 +60,10 @@
 
 #include "libbb.h"
 #include "xregex.h"
+
+enum {
+	OPT_in_place = 1 << 0,
+};
 
 /* Each sed command turns into one of these structures. */
 typedef struct sed_cmd_s {
@@ -113,16 +117,16 @@ struct globals {
 	char *add_cmd_line;
 
 	struct pipeline {
-		char *buf;	/* Space to hold string */
-		int idx;	/* Space used */
-		int len;	/* Space allocated */
+		char *buf;  /* Space to hold string */
+		int idx;    /* Space used */
+		int len;    /* Space allocated */
 	} pipeline;
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
-void BUG_sed_globals_too_big(void);
+struct BUG_G_too_big {
+        char BUG_G_too_big[sizeof(G) <= COMMON_BUFSIZE ? 1 : -1];
+};
 #define INIT_G() do { \
-	if (sizeof(struct globals) > COMMON_BUFSIZE) \
-		BUG_sed_globals_too_big(); \
 	G.sed_cmd_tail = &G.sed_cmd_head; \
 } while (0)
 
@@ -359,7 +363,8 @@ static int parse_subst_cmd(sed_cmd_t *sed_cmd, const char *substr)
 			continue;
 		}
 		/* Skip spaces */
-		if (isspace(substr[idx])) continue;
+		if (isspace(substr[idx]))
+			continue;
 
 		switch (substr[idx]) {
 		/* Replace all occurrences */
@@ -384,7 +389,8 @@ static int parse_subst_cmd(sed_cmd_t *sed_cmd, const char *substr)
 			break;
 		/* Comment */
 		case '#':
-			while (substr[++idx]) /*skip all*/;
+			// while (substr[++idx]) continue;
+			idx += strlen(substr + idx); // same
 			/* Fall through */
 		/* End of command */
 		case ';':
@@ -394,7 +400,7 @@ static int parse_subst_cmd(sed_cmd_t *sed_cmd, const char *substr)
 			bb_error_msg_and_die("bad option in substitution expression");
 		}
 	}
-out:
+ out:
 	/* compile the match string into a regex */
 	if (*match != '\0') {
 		/* If match is empty, we use last regex used at runtime */
@@ -417,16 +423,15 @@ static const char *parse_cmd_args(sed_cmd_t *sed_cmd, const char *cmdstr)
 	/* handle edit cmds: (a)ppend, (i)nsert, and (c)hange */
 	else if (strchr("aic", sed_cmd->cmd)) {
 		if ((sed_cmd->end_line || sed_cmd->end_match) && sed_cmd->cmd != 'c')
-			bb_error_msg_and_die
-				("only a beginning address can be specified for edit commands");
+			bb_error_msg_and_die("only a beginning address can be specified for edit commands");
 		for (;;) {
 			if (*cmdstr == '\n' || *cmdstr == '\\') {
 				cmdstr++;
 				break;
-			} else if (isspace(*cmdstr))
-				cmdstr++;
-			else
+			}
+			if (!isspace(*cmdstr))
 				break;
+			cmdstr++;
 		}
 		sed_cmd->string = xstrdup(cmdstr);
 		/* "\anychar" -> "anychar" */
@@ -487,7 +492,7 @@ static const char *parse_cmd_args(sed_cmd_t *sed_cmd, const char *cmdstr)
 static void add_cmd(const char *cmdstr)
 {
 	sed_cmd_t *sed_cmd;
-	int temp;
+	unsigned len, n;
 
 	/* Append this line to any unfinished line from last time. */
 	if (G.add_cmd_line) {
@@ -496,12 +501,14 @@ static void add_cmd(const char *cmdstr)
 		cmdstr = G.add_cmd_line = tp;
 	}
 
-	/* If this line ends with backslash, request next line. */
-	temp = strlen(cmdstr);
-	if (temp && cmdstr[--temp] == '\\') {
+	/* If this line ends with unescaped backslash, request next line. */
+	n = len = strlen(cmdstr);
+	while (n && cmdstr[n-1] == '\\')
+		n--;
+	if ((len - n) & 1) { /* if odd number of trailing backslashes */
 		if (!G.add_cmd_line)
 			G.add_cmd_line = xstrdup(cmdstr);
-		G.add_cmd_line[temp] = '\0';
+		G.add_cmd_line[len-1] = '\0';
 		return;
 	}
 
@@ -560,7 +567,7 @@ static void add_cmd(const char *cmdstr)
 		/* last part (mandatory) will be a command */
 		if (!*cmdstr)
 			bb_error_msg_and_die("missing command");
-		sed_cmd->cmd = *(cmdstr++);
+		sed_cmd->cmd = *cmdstr++;
 		cmdstr = parse_cmd_args(sed_cmd, cmdstr);
 
 		/* Add the command to the command array */
@@ -690,10 +697,8 @@ static int do_subst_command(sed_cmd_t *sed_cmd, char **line_p)
 		if (sed_cmd->which_match)
 			break;
 
-		if (*line == '\0')
-			break;
 //maybe (G.regmatch[0].rm_eo ? REG_NOTBOL : 0) instead of unconditional REG_NOTBOL?
-	} while (regexec(current_regex, line, 10, G.regmatch, REG_NOTBOL) != REG_NOMATCH);
+	} while (*line && regexec(current_regex, line, 10, G.regmatch, REG_NOTBOL) != REG_NOMATCH);
 
 	/* Copy rest of string into output pipeline */
 	while (1) {
@@ -896,13 +901,32 @@ static void process_files(void)
 
 		/* Determine if this command matches this line: */
 
+		//bb_error_msg("match1:%d", sed_cmd->in_match);
+		//bb_error_msg("match2:%d", (!sed_cmd->beg_line && !sed_cmd->end_line
+		//		&& !sed_cmd->beg_match && !sed_cmd->end_match));
+		//bb_error_msg("match3:%d", (sed_cmd->beg_line > 0
+		//	&& (sed_cmd->end_line || sed_cmd->end_match
+		//	    ? (sed_cmd->beg_line <= linenum)
+		//	    : (sed_cmd->beg_line == linenum)
+		//	    )
+		//	)
+		//bb_error_msg("match4:%d", (beg_match(sed_cmd, pattern_space)));
+		//bb_error_msg("match5:%d", (sed_cmd->beg_line == -1 && next_line == NULL));
+
 		/* Are we continuing a previous multi-line match? */
 		sed_cmd->in_match = sed_cmd->in_match
 			/* Or is no range necessary? */
 			|| (!sed_cmd->beg_line && !sed_cmd->end_line
 				&& !sed_cmd->beg_match && !sed_cmd->end_match)
 			/* Or did we match the start of a numerical range? */
-			|| (sed_cmd->beg_line > 0 && (sed_cmd->beg_line <= linenum))
+			|| (sed_cmd->beg_line > 0
+			    && (sed_cmd->end_line || sed_cmd->end_match
+				  /* note: even if end is numeric and is < linenum too,
+				   * GNU sed matches! We match too */
+				? (sed_cmd->beg_line <= linenum)    /* N,end */
+				: (sed_cmd->beg_line == linenum)    /* N */
+				)
+			    )
 			/* Or does this line match our begin address regex? */
 			|| (beg_match(sed_cmd, pattern_space))
 			/* Or did we match last line of input? */
@@ -918,8 +942,11 @@ static void process_files(void)
 
 		if (matched) {
 			/* once matched, "n,xxx" range is dead, disabling it */
-			if (sed_cmd->beg_line > 0)
+			if (sed_cmd->beg_line > 0
+			 && !(option_mask32 & OPT_in_place) /* but not for -i */
+			) {
 				sed_cmd->beg_line = -2;
+			}
 			sed_cmd->in_match = !(
 				/* has the ending line come, or is this a single address command? */
 				(sed_cmd->end_line ?
@@ -938,7 +965,15 @@ static void process_files(void)
 		/* Skip blocks of commands we didn't match */
 		if (sed_cmd->cmd == '{') {
 			if (sed_cmd->invert ? matched : !matched) {
-				while (sed_cmd->cmd != '}') {
+				unsigned nest_cnt = 0;
+				while (1) {
+					if (sed_cmd->cmd == '{')
+						nest_cnt++;
+					if (sed_cmd->cmd == '}') {
+						nest_cnt--;
+						if (nest_cnt == 0)
+							break;
+					}
 					sed_cmd = sed_cmd->next;
 					if (!sed_cmd)
 						bb_error_msg_and_die("unterminated {");
@@ -957,6 +992,8 @@ static void process_files(void)
 		}
 
 		/* actual sedding */
+		//bb_error_msg("pattern_space:'%s' next_line:'%s' cmd:%c",
+		//pattern_space, next_line, sed_cmd->cmd);
 		switch (sed_cmd->cmd) {
 
 		/* Print line number */
@@ -968,7 +1005,6 @@ static void process_files(void)
 		case 'P':
 		{
 			char *tmp = strchr(pattern_space, '\n');
-
 			if (tmp) {
 				*tmp = '\0';
 				/* TODO: explain why '\n' below */
@@ -991,11 +1027,8 @@ static void process_files(void)
 		case 'D':
 		{
 			char *tmp = strchr(pattern_space, '\n');
-
 			if (tmp) {
-				tmp = xstrdup(tmp+1);
-				free(pattern_space);
-				pattern_space = tmp;
+				overlapping_strcpy(pattern_space, tmp + 1);
 				goto restart;
 			}
 		}
@@ -1033,14 +1066,13 @@ static void process_files(void)
 		case 'c':
 			/* Only triggers on last line of a matching range. */
 			if (!sed_cmd->in_match)
-				sed_puts(sed_cmd->string, NO_EOL_CHAR);
+				sed_puts(sed_cmd->string, '\n');
 			goto discard_line;
 
 		/* Read file, append contents to output */
 		case 'r':
 		{
 			FILE *rfile;
-
 			rfile = fopen_for_read(sed_cmd->string);
 			if (rfile) {
 				char *line;
@@ -1088,15 +1120,20 @@ static void process_files(void)
 		{
 			int len;
 			/* If no next line, jump to end of script and exit. */
+			/* http://www.gnu.org/software/sed/manual/sed.html:
+			 * "Most versions of sed exit without printing anything
+			 * when the N command is issued on the last line of
+			 * a file. GNU sed prints pattern space before exiting
+			 * unless of course the -n command switch has been
+			 * specified. This choice is by design."
+			 */
 			if (next_line == NULL) {
-				/* Jump to end of script and exit */
-				free(next_line);
-				next_line = NULL;
-				goto discard_line;
-			/* append next_line, read new next_line. */
+				//goto discard_line;
+				goto discard_commands; /* GNU behavior */
 			}
+			/* Append next_line, read new next_line. */
 			len = strlen(pattern_space);
-			pattern_space = realloc(pattern_space, len + strlen(next_line) + 2);
+			pattern_space = xrealloc(pattern_space, len + strlen(next_line) + 2);
 			pattern_space[len] = '\n';
 			strcpy(pattern_space + len+1, next_line);
 			last_gets_char = next_gets_char;
@@ -1123,7 +1160,6 @@ static void process_files(void)
 		case 'y':
 		{
 			int i, j;
-
 			for (i = 0; pattern_space[i]; i++) {
 				for (j = 0; sed_cmd->string[j]; j += 2) {
 					if (pattern_space[i] == sed_cmd->string[j]) {
@@ -1186,7 +1222,7 @@ static void process_files(void)
 		case 'x': /* Exchange hold and pattern space */
 		{
 			char *tmp = pattern_space;
-			pattern_space = G.hold_space ? : xzalloc(1);
+			pattern_space = G.hold_space ? G.hold_space : xzalloc(1);
 			last_gets_char = '\n';
 			G.hold_space = tmp;
 			break;
@@ -1249,9 +1285,6 @@ static void add_cmd_block(char *cmdstr)
 int sed_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int sed_main(int argc UNUSED_PARAM, char **argv)
 {
-	enum {
-		OPT_in_place = 1 << 0,
-	};
 	unsigned opt;
 	llist_t *opt_e, *opt_f;
 	int status = EXIT_SUCCESS;
@@ -1271,6 +1304,7 @@ int sed_main(int argc UNUSED_PARAM, char **argv)
 	opt_e = opt_f = NULL;
 	opt_complementary = "e::f::" /* can occur multiple times */
 	                    "nn"; /* count -n */
+	/* -i must be first, to match OPT_in_place definition */
 	opt = getopt32(argv, "irne:f:", &opt_e, &opt_f,
 			    &G.be_quiet); /* counter for -n */
 	//argc -= optind;
@@ -1312,7 +1346,6 @@ int sed_main(int argc UNUSED_PARAM, char **argv)
 		if (opt & OPT_in_place)
 			bb_error_msg_and_die(bb_msg_requires_arg, "-i");
 		add_input_file(stdin);
-		process_files();
 	} else {
 		int i;
 		FILE *file;
@@ -1337,15 +1370,15 @@ int sed_main(int argc UNUSED_PARAM, char **argv)
 			}
 
 			G.outname = xasprintf("%sXXXXXX", argv[i]);
-			nonstdoutfd = mkstemp(G.outname);
-			if (-1 == nonstdoutfd)
-				bb_perror_msg_and_die("cannot create temp file %s", G.outname);
-			G.nonstdout = fdopen(nonstdoutfd, "w");
+			nonstdoutfd = xmkstemp(G.outname);
+			G.nonstdout = xfdopen_for_write(nonstdoutfd);
 
-			/* Set permissions of output file */
-
+			/* Set permissions/owner of output file */
 			fstat(fileno(file), &statbuf);
+			/* chmod'ing AFTER chown would preserve suid/sgid bits,
+			 * but GNU sed 4.2.1 does not preserve them either */
 			fchmod(nonstdoutfd, statbuf.st_mode);
+			fchown(nonstdoutfd, statbuf.st_uid, statbuf.st_gid);
 			add_input_file(file);
 			process_files();
 			fclose(G.nonstdout);
@@ -1356,9 +1389,13 @@ int sed_main(int argc UNUSED_PARAM, char **argv)
 			free(G.outname);
 			G.outname = NULL;
 		}
-		if (G.input_file_count > G.current_input_file)
-			process_files();
+		/* Here, to handle "sed 'cmds' nonexistent_file" case we did:
+		 * if (G.current_input_file >= G.input_file_count)
+		 *	return status;
+		 * but it's not needed since process_files() works correctly
+		 * in this case too. */
 	}
+	process_files();
 
 	return status;
 }

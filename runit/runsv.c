@@ -95,7 +95,7 @@ struct globals {
 	struct fd_pair logpipe;
 	char *dir;
 	struct svdir svd[2];
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 #define haslog       (G.haslog      )
 #define sigterm      (G.sigterm     )
@@ -151,7 +151,8 @@ static char *bb_stpcpy(char *p, const char *to_add)
 
 static int open_trunc_or_warn(const char *name)
 {
-	int fd = open_trunc(name);
+	/* Why O_NDELAY? */
+	int fd = open(name, O_WRONLY | O_NDELAY | O_TRUNC | O_CREAT, 0644);
 	if (fd < 0)
 		bb_perror_msg("%s: warning: cannot open %s",
 				dir, name);
@@ -311,7 +312,6 @@ static void startservice(struct svdir *s)
 	int p;
 	const char *arg[4];
 	char exitcode[sizeof(int)*3 + 2];
-	char sigcode[sizeof(int)*3 + 2];
 
 	if (s->state == S_FINISH) {
 /* Two arguments are given to ./finish. The first one is ./run exit code,
@@ -324,13 +324,12 @@ static void startservice(struct svdir *s)
 		arg[0] = "./finish";
 		arg[1] = "-1";
 		if (WIFEXITED(s->wstat)) {
-			sprintf(exitcode, "%u", (int) WEXITSTATUS(s->wstat));
+			*utoa_to_buf(WEXITSTATUS(s->wstat), exitcode, sizeof(exitcode)) = '\0';
 			arg[1] = exitcode;
 		}
 		//arg[2] = "0";
 		//if (WIFSIGNALED(s->wstat)) {
-			sprintf(sigcode, "%u", (int) WTERMSIG(s->wstat));
-			arg[2] = sigcode;
+			arg[2] = utoa(WTERMSIG(s->wstat));
 		//}
 		arg[3] = NULL;
 	} else {
@@ -465,9 +464,7 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
 
 	INIT_G();
 
-	if (!argv[1] || argv[2])
-		bb_show_usage();
-	dir = argv[1];
+	dir = single_argv(argv);
 
 	xpiped_pair(selfpipe);
 	close_on_exec_on(selfpipe.rd);
@@ -527,7 +524,7 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
 	}
 	svd[0].fdlock = xopen3("log/supervise/lock"+4,
 			O_WRONLY|O_NDELAY|O_APPEND|O_CREAT, 0600);
-	if (lock_exnb(svd[0].fdlock) == -1)
+	if (flock(svd[0].fdlock, LOCK_EX | LOCK_NB) == -1)
 		fatal_cannot("lock supervise/lock");
 	close_on_exec_on(svd[0].fdlock);
 	if (haslog) {
@@ -551,7 +548,7 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
 		}
 		svd[1].fdlock = xopen3("log/supervise/lock",
 				O_WRONLY|O_NDELAY|O_APPEND|O_CREAT, 0600);
-		if (lock_ex(svd[1].fdlock) == -1)
+		if (flock(svd[1].fdlock, LOCK_EX) == -1)
 			fatal_cannot("lock log/supervise/lock");
 		close_on_exec_on(svd[1].fdlock);
 	}
@@ -621,7 +618,7 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
 				pidchanged = 1;
 				svd[0].ctrl &= ~C_TERM;
 				if (svd[0].state != S_FINISH) {
-					fd = open_read("finish");
+					fd = open("finish", O_RDONLY|O_NDELAY);
 					if (fd != -1) {
 						close(fd);
 						svd[0].state = S_FINISH;

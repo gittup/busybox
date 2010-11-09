@@ -1,8 +1,12 @@
 include_rules
 
-lib-@(ASH)      += ash.c ash_ptr_hack.c
-lib-@(HUSH)     += hush.c match.c
+lib-@(ASH) += ash.c ash_ptr_hack.c shell_common.c
+lib-@(ASH_RANDOM_SUPPORT) += random.c
 lib-@(CTTYHACK) += cttyhack.c
+lib-@(HUSH) += hush.c match.c shell_common.c
+lib-@(HUSH_RANDOM_SUPPORT) += random.c
 lib-@(SH_MATH_SUPPORT) += math.c
+
+generated_headers += ../include/NUM_APPLETS.h
 
 include $(BUSYBOX_ROOT)/busybox.tup

@@ -10,7 +10,7 @@
  *
  * Copyright (C) 2001 Hewlett-Packard Laboratories
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
  * This was originally written for blob and then adapted for busybox.
  */
@@ -234,21 +234,18 @@ static void sigalrm_handler(int UNUSED_PARAM signum)
 }
 
 int rx_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
-int rx_main(int argc, char **argv)
+int rx_main(int argc UNUSED_PARAM, char **argv)
 {
 	struct termios tty, orig_tty;
 	int termios_err;
 	int file_fd;
 	int n;
 
-	if (argc != 2)
-		bb_show_usage();
-
 	/* Disabled by vda:
 	 * why we can't receive from stdin? Why we *require*
 	 * controlling tty?? */
 	/*read_fd = xopen(CURRENT_TTY, O_RDWR);*/
-	file_fd = xopen(argv[1], O_RDWR|O_CREAT|O_TRUNC);
+	file_fd = xopen(single_argv(argv), O_RDWR|O_CREAT|O_TRUNC);
 
 	termios_err = tcgetattr(read_fd, &tty);
 	if (termios_err == 0) {

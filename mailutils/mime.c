@@ -5,7 +5,7 @@
  *
  * Copyright (C) 2008 by Vladimir Dronnikov <dronnikov@gmail.com>
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 #include "libbb.h"
 #include "mail.h"
@@ -177,7 +177,8 @@ int makemime_main(int argc UNUSED_PARAM, char **argv)
 static const char *find_token(const char *const string_array[], const char *key, const char *defvalue)
 {
 	const char *r = NULL;
-	for (int i = 0; string_array[i] != 0; i++) {
+	int i;
+	for (i = 0; string_array[i] != NULL; i++) {
 		if (strcasecmp(string_array[i], key) == 0) {
 			r = (char *)string_array[i+1];
 			break;
@@ -224,7 +225,7 @@ static int parse(const char *boundary, char **argv)
 	// prepare unique string pattern
 	uniq = xasprintf("%%llu.%u.%s", (unsigned)getpid(), safe_gethostname());
 
-//bb_info_msg("PARSE[%s]", terminator);
+//bb_info_msg("PARSE[%s]", uniq);
 
 	while ((line = xmalloc_fgets_str(stdin, "\r\n\r\n")) != NULL) {
 
@@ -287,12 +288,11 @@ static int parse(const char *boundary, char **argv)
 					xsetenv("CHARSET", charset);
 					xsetenv("ENCODING", encoding);
 					xsetenv("FILENAME", filename);
-					BB_EXECVP(*argv, argv);
-					_exit(EXIT_FAILURE);
+					BB_EXECVP_or_die(argv);
 				}
 				// parent dumps to fd[1]
 				close(fd[0]);
-				fp = fdopen(fd[1], "w");
+				fp = xfdopen_for_write(fd[1]);
 				signal(SIGPIPE, SIG_IGN); // ignore EPIPE
 			// or create a file for dump
 			} else {
@@ -306,7 +306,7 @@ static int parse(const char *boundary, char **argv)
 
 			// dump to fp
 			if (0 == strcasecmp(encoding, "base64")) {
-				decode_base64(stdin, fp);
+				read_base64(stdin, fp, '-');
 			} else if (0 != strcasecmp(encoding, "7bit")
 				&& 0 != strcasecmp(encoding, "8bit")
 			) {
@@ -356,7 +356,7 @@ static int parse(const char *boundary, char **argv)
 			if (opts & OPT_X) {
 				signal(SIGPIPE, SIG_DFL);
 				// exit if helper exited >0
-				rc = wait4pid(pid);
+				rc = (wait4pid(pid) & 0xff);
 				if (rc)
 					return rc+20;
 			}
@@ -368,7 +368,7 @@ static int parse(const char *boundary, char **argv)
 			}
 		}
  next:
- 		free(line);
+		free(line);
 	}
 
 //bb_info_msg("ENDPARSE[%s]", boundary);

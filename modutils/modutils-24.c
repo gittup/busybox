@@ -55,7 +55,7 @@
  *   Restructured (and partly rewritten) by:
  *   Björn Ekwall <bj0rn@blox.se> February 1999
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 #include "libbb.h"
@@ -88,6 +88,27 @@
 #define USE_GOT_ENTRIES
 #define GOT_ENTRY_SIZE 8
 #define USE_SINGLE
+#endif
+
+/* NDS32 support */
+#if defined(__nds32__) || defined(__NDS32__)
+#define CONFIG_USE_GOT_ENTRIES
+#define CONFIG_GOT_ENTRY_SIZE 4
+#define CONFIG_USE_SINGLE
+
+#if defined(__NDS32_EB__)
+#define MATCH_MACHINE(x) (x == EM_NDS32)
+#define SHT_RELM    SHT_RELA
+#define Elf32_RelM  Elf32_Rela
+#define ELFCLASSM   ELFCLASS32
+#endif
+
+#if defined(__NDS32_EL__)
+#define MATCH_MACHINE(x) (x == EM_NDS32)
+#define SHT_RELM    SHT_RELA
+#define Elf32_RelM  Elf32_Rela
+#define ELFCLASSM   ELFCLASS32
+#endif
 #endif
 
 /* blackfin */
@@ -865,19 +886,23 @@ arch_apply_relocation(struct obj_file *f,
 			break;
 		case R_H8_PCREL16:
 			v -= dot + 2;
-			if ((ElfW(Sword))v > 0x7fff ||
-			    (ElfW(Sword))v < -(ElfW(Sword))0x8000)
+			if ((ElfW(Sword))v > 0x7fff
+			 || (ElfW(Sword))v < -(ElfW(Sword))0x8000
+			) {
 				ret = obj_reloc_overflow;
-			else
+			} else {
 				*(unsigned short *)loc = v;
+			}
 			break;
 		case R_H8_PCREL8:
 			v -= dot + 1;
-			if ((ElfW(Sword))v > 0x7f ||
-			    (ElfW(Sword))v < -(ElfW(Sword))0x80)
+			if ((ElfW(Sword))v > 0x7f
+			 || (ElfW(Sword))v < -(ElfW(Sword))0x80
+			) {
 				ret = obj_reloc_overflow;
-			else
+			} else {
 				*(unsigned char *)loc = v;
+			}
 			break;
 
 #elif defined(__i386__)
@@ -1566,7 +1591,7 @@ arch_apply_relocation(struct obj_file *f,
 #endif
 
 		default:
-			printf("Warning: unhandled reloc %d\n",(int)ELF_R_TYPE(rel->r_info));
+			printf("Warning: unhandled reloc %d\n", (int)ELF_R_TYPE(rel->r_info));
 			ret = obj_reloc_unhandled;
 			break;
 
@@ -2432,11 +2457,11 @@ new_process_module_arguments(struct obj_file *f, const char *options)
 		loc = contents + sym->value;
 
 		if (*pinfo == 'c') {
-			if (!isdigit(*(pinfo + 1))) {
+			if (!isdigit(pinfo[1])) {
 				bb_error_msg_and_die("parameter type 'c' for %s must be followed by"
 						     " the maximum size", param);
 			}
-			charssize = strtoul(pinfo + 1, (char **) NULL, 10);
+			charssize = strtoul(pinfo + 1, NULL, 10);
 		}
 
 		if (val == NULL) {
@@ -2449,6 +2474,8 @@ new_process_module_arguments(struct obj_file *f, const char *options)
 		n = 0;
 		p = val;
 		while (*p != 0) {
+			char *endp;
+
 			if (++n > max)
 				bb_error_msg_and_die("too many values for %s (max %d)", param, max);
 
@@ -2472,19 +2499,23 @@ new_process_module_arguments(struct obj_file *f, const char *options)
 				p += len;
 				break;
 			case 'b':
-				*loc++ = strtoul(p, &p, 0);
+				*loc++ = strtoul(p, &endp, 0);
+				p = endp; /* gcc likes temp var for &endp */
 				break;
 			case 'h':
-				*(short *) loc = strtoul(p, &p, 0);
+				*(short *) loc = strtoul(p, &endp, 0);
 				loc += tgt_sizeof_short;
+				p = endp;
 				break;
 			case 'i':
-				*(int *) loc = strtoul(p, &p, 0);
+				*(int *) loc = strtoul(p, &endp, 0);
 				loc += tgt_sizeof_int;
+				p = endp;
 				break;
 			case 'l':
-				*(long *) loc = strtoul(p, &p, 0);
+				*(long *) loc = strtoul(p, &endp, 0);
 				loc += tgt_sizeof_long;
+				p = endp;
 				break;
 			default:
 				bb_error_msg_and_die("unknown parameter type '%c' for %s",
@@ -3193,6 +3224,7 @@ static int obj_create_image(struct obj_file *f, char *image)
 
 static struct obj_file *obj_load(char *image, size_t image_size, int loadprogbits)
 {
+	typedef uint32_t aliased_uint32_t FIX_ALIASING;
 #if BB_LITTLE_ENDIAN
 # define ELFMAG_U32 ((uint32_t)(ELFMAG0 + 0x100 * (ELFMAG1 + (0x100 * (ELFMAG2 + 0x100 * ELFMAG3)))))
 #else
@@ -3214,7 +3246,7 @@ static struct obj_file *obj_load(char *image, size_t image_size, int loadprogbit
 		bb_error_msg_and_die("error while loading ELF header");
 	memcpy(&f->header, image, sizeof(f->header));
 
-	if (*(uint32_t*)(&f->header.e_ident) != ELFMAG_U32) {
+	if (*(aliased_uint32_t*)(&f->header.e_ident) != ELFMAG_U32) {
 		bb_error_msg_and_die("not an ELF file");
 	}
 	if (f->header.e_ident[EI_CLASS] != ELFCLASSM
@@ -3274,6 +3306,9 @@ static struct obj_file *obj_load(char *image, size_t image_size, int loadprogbit
 			case SHT_SYMTAB:
 			case SHT_STRTAB:
 			case SHT_RELM:
+#if defined(__mips__)
+			case SHT_MIPS_DWARF:
+#endif
 				sec->contents = NULL;
 				if (sec->header.sh_size > 0) {
 					sec->contents = xmalloc(sec->header.sh_size);
@@ -3515,20 +3550,18 @@ static void set_tainted(int fd, const char *m_name,
 /* Check if loading this module will taint the kernel. */
 static void check_tainted_module(struct obj_file *f, const char *m_name)
 {
-	static const char tainted_file[] ALIGN1 = TAINT_FILENAME;
-
 	int fd, kernel_has_tainted;
 	const char *ptr;
 
 	kernel_has_tainted = 1;
-	fd = open(tainted_file, O_RDWR);
+	fd = open(TAINT_FILENAME, O_RDWR);
 	if (fd < 0) {
 		if (errno == ENOENT)
 			kernel_has_tainted = 0;
 		else if (errno == EACCES)
 			kernel_has_tainted = 1;
 		else {
-			perror(tainted_file);
+			bb_simple_perror_msg(TAINT_FILENAME);
 			kernel_has_tainted = 0;
 		}
 	}
@@ -3777,12 +3810,20 @@ int FAST_FUNC bb_init_module_24(const char *m_filename, const char *options)
 	int m_has_modinfo;
 #endif
 	char *image;
-	size_t image_size = 64 * 1024 * 1024;
+	size_t image_size;
+	bool mmaped;
 
-	/* Load module into memory and unzip if compressed */
-	image = xmalloc_open_zipped_read_close(m_filename, &image_size);
-	if (!image)
-		return EXIT_FAILURE;
+	image_size = INT_MAX - 4095;
+	mmaped = 0;
+	image = try_to_mmap_module(m_filename, &image_size);
+	if (image) {
+		mmaped = 1;
+	} else {
+		/* Load module into memory and unzip if compressed */
+		image = xmalloc_open_zipped_read_close(m_filename, &image_size);
+		if (!image)
+			return EXIT_FAILURE;
+	}
 
 	m_name = xstrdup(bb_basename(m_filename));
 	/* "module.o[.gz]" -> "module" */
@@ -3895,7 +3936,10 @@ int FAST_FUNC bb_init_module_24(const char *m_filename, const char *options)
 	exit_status = EXIT_SUCCESS;
 
  out:
-	free(image);
+	if (mmaped)
+		munmap(image, image_size);
+	else
+		free(image);
 	free(m_name);
 
 	return exit_status;

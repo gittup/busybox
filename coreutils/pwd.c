@@ -4,7 +4,7 @@
  *
  * Copyright (C) 1995, 1996 by Bruce Perens <bruce@pixar.com>.
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 #include "libbb.h"
@@ -20,7 +20,7 @@ int pwd_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 	if (buf != NULL) {
 		puts(buf);
 		free(buf);
-		return fflush(stdout);
+		return fflush_all();
 	}
 
 	return EXIT_FAILURE;

@@ -3,9 +3,9 @@
  * Utility routines.
  *
  * Based in part on code from sash, Copyright (c) 1999 by David I. Bell
- * Permission has been granted to redistribute this code under the GPL.
+ * Permission has been granted to redistribute this code under GPL.
  *
- * Licensed under GPLv2 or later, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
 #include <sys/stat.h>
@@ -15,7 +15,7 @@
  * Return TRUE if fileName is a directory.
  * Nonexistent files return FALSE.
  */
-int FAST_FUNC is_directory(const char *fileName, const int followLinks, struct stat *statBuf)
+int FAST_FUNC is_directory(const char *fileName, int followLinks, struct stat *statBuf)
 {
 	int status;
 	struct stat astatBuf;

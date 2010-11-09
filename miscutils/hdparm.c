@@ -5,7 +5,7 @@
  * Copyright (C) [2003] by [Matteo Croce] <3297627799@wind.it>
  * Hacked by Tito <farmatito@tiscali.it> for size optimization.
  *
- * Licensed under the GPL v2 or later, see the file LICENSE in this tarball.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
  * This program is based on the source code of hdparm: see below...
  * hdparm.c - Command line interface to get/set hard disk parameters
@@ -15,6 +15,9 @@
 /* must be _after_ libbb.h: */
 #include <linux/hdreg.h>
 #include <sys/mount.h>
+#if !defined(BLKGETSIZE64)
+# define BLKGETSIZE64 _IOR(0x12,114,size_t)
+#endif
 
 /* device types */
 /* ------------ */
@@ -312,7 +315,7 @@ struct globals {
 #ifdef DO_FLUSHCACHE
 	unsigned char flushcache[4] = { WIN_FLUSHCACHE, 0, 0, 0 };
 #endif
-};
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 struct BUG_G_too_big {
 	char BUG_G_too_big[sizeof(G) <= COMMON_BUFSIZE ? 1 : -1];
@@ -727,8 +730,8 @@ static void identify(uint16_t *val)
 		if (val[MINOR] && (val[MINOR] <= MINOR_MAX)) {
 			if (like_std < 3) like_std = 3;
 			std = actual_ver[val[MINOR]];
-			if (std) printf("\n\tUsed: %s ", nth_string(minor_str, val[MINOR]));
-
+			if (std)
+				printf("\n\tUsed: %s ", nth_string(minor_str, val[MINOR]));
 		}
 		/* looks like when they up-issue the std, they obsolete one;
 		 * thus, only the newest 4 issues need be supported. (That's
@@ -1182,7 +1185,7 @@ static const char BuffType[] ALIGN1 =
 	"unknown""\0"     "1Sect""\0"      "DualPort""\0"  "DualPortCache"
 ;
 
-static void dump_identity(const struct hd_driveid *id)
+static NOINLINE void dump_identity(const struct hd_driveid *id)
 {
 	int i;
 	const unsigned short *id_regs = (const void*) id;
@@ -1403,7 +1406,7 @@ static void do_time(int cache /*,int fd*/)
 	} else { /* Time device */
 		printf("Timing buffered disk reads:");
 	}
-	fflush(stdout);
+	fflush_all();
 
 	/* Now do the timing */
 	iterations = 0;
@@ -1549,8 +1552,8 @@ static void process_dev(char *devname)
 	unsigned char args[4] = { WIN_SETFEATURES, 0, 0, 0 };
 	const char *fmt = " %s\t= %2ld";
 
-	/*fd = xopen(devname, O_RDONLY | O_NONBLOCK);*/
-	xmove_fd(xopen(devname, O_RDONLY | O_NONBLOCK), fd);
+	/*fd = xopen_nonblocking(devname);*/
+	xmove_fd(xopen_nonblocking(devname), fd);
 	printf("\n%s:\n", devname);
 
 	if (getset_readahead == IS_SET) {
@@ -1742,7 +1745,7 @@ static void process_dev(char *devname)
 		if (-1 == read(fd, buf, sizeof(buf)))
 			bb_perror_msg("read of 512 bytes failed");
 	}
-#endif	/* HDIO_DRIVE_CMD */
+#endif  /* HDIO_DRIVE_CMD */
 	if (getset_mult || get_identity) {
 		multcount = -1;
 		if (ioctl(fd, HDIO_GET_MULTCOUNT, &multcount)) {
@@ -2052,8 +2055,8 @@ int hdparm_main(int argc, char **argv)
 #if ENABLE_FEATURE_HDPARM_HDIO_SCAN_HWIF
 		if (c == 'R') {
 			scan_hwif = parse_opts_0_INTMAX(&hwif_data);
-			hwif_ctrl = xatoi_u((argv[optind]) ? argv[optind] : "");
-			hwif_irq  = xatoi_u((argv[optind+1]) ? argv[optind+1] : "");
+			hwif_ctrl = xatoi_positive((argv[optind]) ? argv[optind] : "");
+			hwif_irq  = xatoi_positive((argv[optind+1]) ? argv[optind+1] : "");
 			/* Move past the 2 additional arguments */
 			argv += 2;
 			argc -= 2;

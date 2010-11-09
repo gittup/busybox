@@ -5,7 +5,7 @@
  * Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
  *	2003, 2004, 2005 by Theodore Ts'o.
  *
- * Licensed under GPLv2, see file LICENSE in this tarball for details.
+ * Licensed under GPLv2, see file LICENSE in this source tree.
  */
 
 /* Usage: mke2fs [options] device
@@ -245,7 +245,7 @@ static void test_disk(ext2_filsys fs, badblocks_list *bb_list)
 	mke2fs_verbose("Running command: %s\n", buf);
 	f = popen(buf, "r");
 	if (!f) {
-		bb_perror_msg_and_die("cannot run '%s'", buf);
+		bb_perror_msg_and_die("can't run '%s'", buf);
 	}
 	retval = ext2fs_read_bb_FILE(fs, f, bb_list, invalid_block);
 	pclose(f);
@@ -799,8 +799,8 @@ static int PRS(int argc, char **argv)
 	int		show_version_only = 0;
 	ext2_ino_t	num_inodes = 0;
 	errcode_t	retval;
-	char *		extended_opts = 0;
-	const char *	fs_type = 0;
+	char *		extended_opts = NULL;
+	const char *	fs_type = NULL;
 	blk_t		dev_size;
 	long		sysval;
 
@@ -895,7 +895,7 @@ static int PRS(int argc, char **argv)
 			creator_os = optarg;
 			break;
 		case 'r':
-			param.s_rev_level = xatoi_u(optarg);
+			param.s_rev_level = xatoi_positive(optarg);
 			if (param.s_rev_level == EXT2_GOOD_OLD_REV) {
 				param.s_feature_incompat = 0;
 				param.s_feature_compat = 0;
@@ -912,11 +912,11 @@ static int PRS(int argc, char **argv)
 			break;
 #ifdef EXT2_DYNAMIC_REV
 		case 'I':
-			inode_size = xatoi_u(optarg);
+			inode_size = xatoi_positive(optarg);
 			break;
 #endif
 		case 'N':
-			num_inodes = xatoi_u(optarg);
+			num_inodes = xatoi_positive(optarg);
 			break;
 		case 'v':
 			quiet = 0;
@@ -1305,7 +1305,7 @@ int mke2fs_main (int argc, char **argv)
 			retval = zero_blocks(fs, start, blocks - start,
 					     NULL, &ret_blk, NULL);
 
-		mke2fs_warning_msg(retval, "cannot zero block %u at end of filesystem", ret_blk);
+		mke2fs_warning_msg(retval, "can't zero block %u at end of filesystem", ret_blk);
 		write_inode_tables(fs);
 		create_root_dir(fs);
 		create_lost_and_found(fs);

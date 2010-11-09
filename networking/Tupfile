@@ -1,5 +1,6 @@
 include_rules
 
+lib-@(NBDCLIENT) += nbd-client.c
 lib-@(ARP)          += arp.c interface.c
 lib-@(ARPING)       += arping.c
 lib-@(BRCTL)        += brctl.c
@@ -22,6 +23,7 @@ lib-@(NAMEIF)       += nameif.c
 lib-@(NC)           += nc.c
 lib-@(NETSTAT)      += netstat.c
 lib-@(NSLOOKUP)     += nslookup.c
+lib-@(NTPD)         += ntpd.c
 lib-@(PING)         += ping.c
 lib-@(PING6)        += ping.c
 lib-@(PSCAN)        += pscan.c

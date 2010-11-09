@@ -1,5 +1,6 @@
 include_rules
 
+lib-@(MODINFO) += modinfo.c modutils.c
 lib-@(MODPROBE_SMALL)      += modprobe-small.c
 lib-@(DEPMOD)              += depmod.c modutils.c
 lib-@(INSMOD)              += insmod.c modutils.c

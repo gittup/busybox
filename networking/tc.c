@@ -1,10 +1,8 @@
 /* vi: set sw=4 ts=4: */
 /*
- * tc.c		"tc" utility frontend.
+ * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  *
- * Licensed under the GPL v2 or later, see the file LICENSE in this tarball.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+ * Authors: Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  *
  * Bernhard Reutner-Fischer adjusted for busybox
  */
@@ -43,8 +41,7 @@ struct globals {
 	__u32 filter_parent;
 	__u32 filter_prio;
 	__u32 filter_proto;
-};
-
+} FIX_ALIASING;
 #define G (*(struct globals*)&bb_common_bufsiz1)
 #define filter_ifindex (G.filter_ifindex)
 #define filter_qdisc (G.filter_qdisc)
@@ -89,7 +86,7 @@ static int get_qdisc_handle(__u32 *h, const char *str) {
 	if (p == str)
 		return 1;
 	maj <<= 16;
-	if (*p != ':' && *p!=0)
+	if (*p != ':' && *p != '\0')
 		return 1;
  ok:
 	*h = maj;
@@ -119,7 +116,8 @@ static int get_tc_classid(__u32 *h, const char *str) {
 		maj <<= 16;
 		str = p + 1;
 		min = strtoul(str, &p, 16);
-		if (*p != 0 || min >= (1<<16))
+//FIXME: check for "" too?
+		if (*p != '\0' || min >= (1<<16))
 			return 1;
 		maj |= min;
 	} else if (*p != 0)
@@ -190,8 +188,8 @@ static int cbq_print_opt(struct rtattr *opt)
 	struct tc_cbq_wrropt *wrr = NULL;
 	struct tc_cbq_fopt *fopt = NULL;
 	struct tc_cbq_ovl *ovl = NULL;
-	const char * const error = "CBQ: too short %s opt";
-	RESERVE_CONFIG_BUFFER(buf, 64);
+	const char *const error = "CBQ: too short %s opt";
+	char buf[64];
 
 	if (opt == NULL)
 		goto done;
@@ -271,7 +269,6 @@ static int cbq_print_opt(struct rtattr *opt)
 		}
 	}
  done:
-	RELEASE_CONFIG_BUFFER(buf);
 	return 0;
 }
 
@@ -470,17 +467,22 @@ int tc_main(int argc UNUSED_PARAM, char **argv)
 			msg.tcm_ifindex = xll_name_to_index(dev);
 			if (cmd >= CMD_show)
 				filter_ifindex = msg.tcm_ifindex;
-		} else if ((arg == ARG_qdisc && obj == OBJ_class && cmd >= CMD_show)
-				   || (arg == ARG_handle && obj == OBJ_qdisc
-					   && cmd == CMD_change)) {
+		} else
+		if ((arg == ARG_qdisc && obj == OBJ_class && cmd >= CMD_show)
+		 || (arg == ARG_handle && obj == OBJ_qdisc && cmd == CMD_change)
+		) {
 			NEXT_ARG();
 			/* We don't care about duparg2("qdisc handle",*argv) for now */
 			if (get_qdisc_handle(&filter_qdisc, *argv))
 				invarg(*argv, "qdisc");
-		} else if (obj != OBJ_qdisc &&
-				   (arg == ARG_root
-					 || arg == ARG_parent
-					 || (obj == OBJ_filter && arg >= ARG_pref))) {
+		} else
+		if (obj != OBJ_qdisc
+		 && (arg == ARG_root
+		    || arg == ARG_parent
+		    || (obj == OBJ_filter && arg >= ARG_pref)
+		    )
+		) {
+			/* nothing */
 		} else {
 			invarg(*argv, "command");
 		}
@@ -530,7 +532,7 @@ int tc_main(int argc UNUSED_PARAM, char **argv)
 		if (rtnl_dump_request(&rth, obj == OBJ_qdisc ? RTM_GETQDISC :
 						obj == OBJ_class ? RTM_GETTCLASS : RTM_GETTFILTER,
 						&msg, sizeof(msg)) < 0)
-			bb_simple_perror_msg_and_die("cannot send dump request");
+			bb_simple_perror_msg_and_die("can't send dump request");
 
 		xrtnl_dump_filter(&rth, obj == OBJ_qdisc ? print_qdisc :
 						obj == OBJ_class ? print_class : print_filter,

@@ -1,17 +1,12 @@
 include_rules
 
-lib-@(APP_UDHCPC)        += common.c options.c packet.c \
-                                   signalpipe.c socket.c
-lib-@(APP_UDHCPD)        += common.c options.c packet.c \
-                                   signalpipe.c socket.c
-lib-@(APP_UDHCPC)        += dhcpc.c clientpacket.c clientsocket.c \
-                                   script.c
-UDHCPC_NEEDS_ARPING-@(FEATURE_UDHCPC_ARPING) = y
-lib-$(UDHCPC_NEEDS_ARPING-y)    += arpping.c
-lib-@(APP_UDHCPD)        += dhcpd.c arpping.c files.c leases.c \
-                                   serverpacket.c static_leases.c
-lib-@(APP_DUMPLEASES)    += dumpleases.c
-lib-@(APP_DHCPRELAY)     += dhcprelay.c
+lib-@(UDHCPC)     += common.c packet.c signalpipe.c socket.c
+lib-@(UDHCPD)     += common.c packet.c signalpipe.c socket.c
+lib-@(UDHCPC)     += dhcpc.c
+lib-@(UDHCPD)     += dhcpd.c arpping.c files.c leases.c static_leases.c
+lib-@(DUMPLEASES) += dumpleases.c
+lib-@(DHCPRELAY)  += dhcprelay.c
+lib-@(FEATURE_UDHCPC_ARPING) += arpping.c
 lib-@(FEATURE_UDHCP_RFC3397) += domain_codec.c
 
 include $(BUSYBOX_ROOT)/busybox.tup

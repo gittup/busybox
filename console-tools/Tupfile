@@ -1,8 +1,9 @@
 include_rules
 
 lib-@(CHVT)		+= chvt.c
+lib-@(FGCONSOLE)		+= fgconsole.c
 lib-@(CLEAR)		+= clear.c
-lib-@(DEALLOCVT)	+= deallocvt.c
+lib-@(DEALLOCVT)		+= deallocvt.c
 lib-@(DUMPKMAP)		+= dumpkmap.c
 lib-@(SETCONSOLE)	+= setconsole.c
 lib-@(KBD_MODE)		+= kbd_mode.c

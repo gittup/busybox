@@ -48,10 +48,7 @@ lib-@(FEATURE_SEAMLESS_XZ)       += open_transformer.c decompress_unxz.c
 lib-@(FEATURE_COMPRESS_USAGE)    += decompress_bunzip2.c
 lib-@(FEATURE_COMPRESS_BBCONFIG) += decompress_bunzip2.c
 lib-@(FEATURE_TAR_TO_COMMAND)    += data_extract_to_command.c
-
-# TODO: ifneq
-ifeq ($(lib-y),)
-else
+ifneq ($(lib-y),)
 lib-y += $(COMMON_FILES)
 endif
 

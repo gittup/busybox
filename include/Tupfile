@@ -1,4 +1,3 @@
 .gitignore
-# TODO: shared libs should avoid touch
-: ../applets/applet_tables |> %f %o && touch %o |> applet_tables.h NUM_APPLETS.h
-: ../applets/usage_compressed | ../applets/usage |> %f %o ../applets && touch %o |> usage_compressed.h
+: ../applets/applet_tables |> %f %o |> applet_tables.h NUM_APPLETS.h
+: ../applets/usage_compressed | ../applets/usage |> %f %o ../applets |> usage_compressed.h

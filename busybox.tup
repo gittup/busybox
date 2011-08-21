@@ -3,5 +3,5 @@
 : foreach $(lib-y) | $(generated_headers) |> !busybox_cc |> %B.o {objs}
 
 !busybox_ld = | $(compiler_files) |> ^ LD %o^ $(CC_LD) -nostdlib -B$(UCLIBC_ROOT)/libc -Wl,-r -o %o %f |>
-!busybox_ld.EMPTY = |> ^ EMPTY %o^ rm -f %o; ar crs %o |>
+!busybox_ld.EMPTY = |> ^ EMPTY %o^ ar crs %o |>
 : {objs} |> !busybox_ld |> built-in.o

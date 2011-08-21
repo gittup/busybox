@@ -310,5 +310,5 @@ link-@(SWAPONOFF) += swaponoff
 link-@(SWITCH_ROOT) += switch_root
 link-@(UMOUNT) += umount
 
-: $(GITTUP_ROOT)/busybox/busybox |> !cp |> busybox
-: foreach $(link-y) <| !ln <| busybox
+: $(TUP_CWD)/busybox |> !cp |> busybox
+run $(TUP_CWD)/install.sh $(link-y)

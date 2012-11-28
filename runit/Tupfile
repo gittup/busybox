@@ -1,9 +1,9 @@
 include_rules
 
-lib-@(RUNSV) += runsv.c runit_lib.c
-lib-@(RUNSVDIR) += runsvdir.c runit_lib.c
-lib-@(SV) += sv.c runit_lib.c
-lib-@(SVLOGD) += svlogd.c runit_lib.c
+lib-@(CONFIG_RUNSV) += runsv.c
+lib-@(CONFIG_RUNSVDIR) += runsvdir.c
+lib-@(CONFIG_SV) += sv.c
+lib-@(CONFIG_SVLOGD) += svlogd.c
 lib-@(CHPST) += chpst.c
 lib-@(ENVDIR) += chpst.c
 lib-@(ENVUIDGID) += chpst.c

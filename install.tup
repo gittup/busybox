@@ -306,5 +306,5 @@ link-@(SWAPONOFF) += swaponoff
 link-@(SWITCH_ROOT) += switch_root
 link-@(UMOUNT) += umount
 
-: $(TUP_CWD)/busybox |> !cp |> busybox
+: $(TUP_CWD)/busybox |> !cp |> busybox | $(GITTUP_ROOT)/<initrd>
 run $(TUP_CWD)/install.sh $(link-y)
